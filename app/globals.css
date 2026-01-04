@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------- Base ------------------- */
+html, body {
+  scroll-behavior: smooth;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ------------------- Theme Colors ------------------- */
+:root {
+  /* Backgrounds */
+  --bg-dark: #0b0f1a;
+  --bg-light: #f9fafb;
+
+  /* Text colors */
+  --text-dark: #e5e7eb;
+  --text-light: #111827;
+
+  /* Muted text */
+  --text-muted-dark: #9ca3af;
+  --text-muted-light: #1f2226;
+
+  /* Card backgrounds */
+  --card-dark: rgba(255, 255, 255, 0.05);
+  --card-light: #ffffff;
+
+  /* Button colors */
+  --btn-dark: #6e8aff;
+  --btn-light: #3b82f6;
+
+  /* Blobs */
+  --blob1-dark: rgba(110, 138, 255, 0.25);
+  --blob2-dark: rgba(255, 124, 163, 0.2);
+  --blob3-dark: rgba(68, 255, 204, 0.15);
+
+  --blob1-light: rgba(110, 138, 255, 0.2);
+  --blob2-light: rgba(255, 124, 163, 0.15);
+  --blob3-light: rgba(68, 255, 204, 0.1);
+
+  /* Particles */
+  --particle-dark: #44ffcc;
+  --particle-light: #3b82f6;
+
+  /* Focus ring */
+  --ring-color: #4460ff;
+
+  
+  --heading-dark: #e5e7eb; /* light text for dark backgrounds */
+  --heading-light: #0f172a; /* slate-900-ish for light backgrounds */
+
+}
+
+/* ------------------- Body ------------------- */
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+body.light {
+  background-color: var(--bg-light);
+  color: var(--text-light);
+}
+
+/* ------------------- Headings ------------------- */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-dark);
+}
+body.light h1, body.light h2, body.light h3 {
+  color: var(--text-light) !important;
+}
+
+/* Default to dark-mode palette (since body default is dark) */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--heading-dark);
+}
+
+/* Light theme via body.light */
+body.light h1, body.light h2, body.light h3, body.light h4, body.light h5, body.light h6 {
+  color: var(--heading-light) !important;
+}
+
+/* Dark theme via .dark (if you use this class on html/body) */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: var(--heading-dark) !important;
+}
+
+
+/* ------------------- Links ------------------- */
+a {
+  color: var(--btn-dark);
+  transition: color 0.3s ease;
+}
+body.light a { color: var(--btn-light); }
+a:hover { color: #ff7ca3; }
+
+/* ------------------- Cards ------------------- */
+.card-hover, .rounded-xl {
+  background-color: var(--card-dark);
+  transition: all 0.3s ease;
+}
+body.light .card-hover, body.light .rounded-xl {
+  background-color: var(--card-light);
+}
+
+/* ------------------- Focus Ring ------------------- */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--ring-color);
+  outline-offset: 2px;
+}
+
+/* ------------------- Section Animation ------------------- */
+.section-enter {
+  animation: sectionEnter 0.6s ease both;
+}
+@keyframes sectionEnter {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ------------------- HR Gradient ------------------- */
+.hr-gradient {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #6e8aff, transparent);
+}
+
+/* ------------------- Blobs ------------------- */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.25;
+  z-index: -5;
+  filter: blur(80px);
+}
+
+.blob1 { background-color: var(--blob1-dark); }
+.blob2 { background-color: var(--blob2-dark); }
+.blob3 { background-color: var(--blob3-dark); }
+
+body.light .blob1 { background-color: var(--blob1-light); }
+body.light .blob2 { background-color: var(--blob2-light); }
+body.light .blob3 { background-color: var(--blob3-light); }
+
+@keyframes blob {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-50px) scale(1.1); }
+  66% { transform: translate(-20px,20px) scale(0.9); }
+}
+.animate-blob { animation: blob 15s infinite ease-in-out; }
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+/* ------------------- Particles ------------------- */
+.particle-network {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+  z-index: -10;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 4px; height: 4px;
+  background-color: var(--particle-dark);
+  border-radius: 50%;
+  animation: float 10s infinite ease-in-out;
+}
+body.light .particle { background-color: var(--particle-light); }
+
+@keyframes float {
+  0% { transform: translate(0,0); }
+  25% { transform: translate(30px,-20px); }
+  50% { transform: translate(-20px,40px); }
+  75% { transform: translate(15px,-30px); }
+  100% { transform: translate(0,0); }
+}
+
+/* ------------------- Falling Code ------------------- */
+.code-fall {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+  overflow: hidden;
+  z-index: -20;
+}
+.code-fall span {
+  position: absolute;
+  top: -100%;
+  font-family: monospace;
+  font-size: 14px;
+  color: rgba(0, 255, 70, 0.3);
+  animation: fall 7s linear infinite;
+}
+body.light .code-fall span {
+  color: rgba(0, 128, 64, 0.25);
+}
+@keyframes fall {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+/* blobs */
+.blob1 {
+  background-color: rgba(99, 102, 241, 0.3); /* light theme */
+}
+.blob2 {
+  background-color: rgba(236, 72, 153, 0.25);
+}
+.blob3 {
+  background-color: rgba(34, 197, 94, 0.25);
+}
+
+/* dark mode blobs override */
+.dark .blob1 {
+  background-color: rgba(110, 138, 255, 0.4);
+}
+.dark .blob2 {
+  background-color: rgba(255, 124, 163, 0.3);
+}
+.dark .blob3 {
+  background-color: rgba(68, 255, 204, 0.25);
+}
+
+/* particles */
+.particle {
+  background-color: #2563eb; /* blue-600 in light */
+}
+.dark .particle {
+  background-color: #44ffcc; /* neon teal in dark */
+}
+
+/* falling code */
+.code-fall span {
+  color: rgba(30, 41, 59, 0.3); /* dark text faint in light mode */
+}
+.dark .code-fall span {
+  color: rgba(0, 255, 70, 0.3); /* neon green in dark */
+}
+
+
+/* Make grids responsive */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 640px) { /* sm */
+  .grid-sm-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-sm-3 { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 768px) { /* md */
+  .grid-md-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-md-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Overflow scroll for PDF */
+.resume-pdf-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Hero text scaling */
+h1 {
+  font-size: 2.25rem; /* text-4xl */
+}
+@media (min-width: 768px) {
+  h1 { font-size: 3rem; /* md:text-5xl */ }
+}
+p {
+  font-size: 1rem;
+}
+@media (min-width: 640px) {
+  p { font-size: 1.125rem; /* sm:text-lg */ }
+}
