@@ -119,7 +119,7 @@ projects: [
     github: 'https://github.com/shashiazad',
     linkedin: 'https://www.linkedin.com/in/shashisa',
     instagram: 'https://www.instagram.com/shashii_s_a',
-    codolio: "https://codolio.com/shashisa",
+    codolio: "https://codolio.com/profile/shashisa",
     location: 'Dell EMC, Bangalore, Karnataka, India'
   }
 };
