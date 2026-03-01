@@ -10,7 +10,9 @@
     "export": "next build && next export"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "framer-motion": "^12.23.26",
+    "lucide-react": "^0.575.0",
     "next": "14.2.6",
     "next-seo": "6.5.0",
     "next-themes": "0.3.0",

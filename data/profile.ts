@@ -1,117 +1,109 @@
-import { link } from "fs";
-
 export const profile = {
   name: 'Shashi Shekhar Azad',
   title: 'Software Engineer II',
   company: 'Dell Technologies',
   company_logo: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Dell_Technologies_logo.svg',
   photo: '/profile.jpg',
+
+  summary: `Software Development Engineer with experience building backend microservices using Java, Spring Boot, and Go. Skilled in designing RESTful APIs, deploying containerized applications with Docker and Kubernetes, and working within Agile teams. Exposure to Generative AI, Agentic AI, and prompt engineering. Strong foundation in Data Structures and Algorithms and Operating Systems.`,
+
   education: [
     {
-      degree: 'Master of Technology (M.Tech), Computer Science and Engineering',
-      school: 'Dr. B.R. Ambedkar National Institute of Technology, Jalandhar',
+      degree: 'Master of Technology in Computer Science and Engineering',
+      school: 'Dr. B R Ambedkar National Institute of Technology Jalandhar',
+      period: 'Aug 2023 – Jun 2025',
+      grade: 'CGPA: 8.18/10.0',
+      location: 'Jalandhar, Punjab',
       link: 'https://www.nitj.ac.in/'
     },
     {
-      degree: 'Bachelor of Technology (B.Tech), Computer Science and Engineering',
-      school: 'Dr. A.P.J. Abdul Kalam Technical University, Lucknow',
+      degree: 'Bachelor of Technology in Computer Science and Engineering',
+      school: 'Kashi Institute of Technology Varanasi',
+      period: 'Nov 2020 – Jun 2023',
+      grade: 'CGPA: 7.78/10.0',
+      location: 'Varanasi, Uttar Pradesh',
       link: 'https://www.aktu.ac.in/'
-    },
-    {
-      degree: 'Dimploma in Engineering, Computer Science and Engineering',
-      school: 'Government Polytechnic, Mau',
-      link: 'https://www.gpmau.com/'
     }
   ],
+
   bio: `Software engineer with expertise in cloud-native architectures, microservices development, and automation. Skilled in building scalable backend systems using Java, Spring Boot, and Go, with a strong focus on secure communication, API design, and workflow optimization through scripting.
-  
-  Proficient in developing REST APIs, implementing system validation checks, and creating solutions that enhance reliability and reduce deployment risks. Experienced in designing reusable processes and documentation to improve efficiency and streamline complex operations.
-  
-  Combining advanced academic training in Computer Science & Engineering with hands-on experience, the focus is on delivering secure, scalable, and future-ready solutions that simplify infrastructure and drive operational excellence.`,
+
+Proficient in developing REST APIs, implementing system validation checks, and creating solutions that enhance reliability and reduce deployment risks. Experienced in designing reusable processes and documentation to improve efficiency and streamline complex operations.
+
+Combining advanced academic training in Computer Science & Engineering with hands-on experience, the focus is on delivering secure, scalable, and future-ready solutions that simplify infrastructure and drive operational excellence.`,
+
   skills: {
-    languages: ['Java', 'Go', 'JavaScript', 'Shell'],
-    backend: ['Spring Boot', 'REST APIs', 'OpenAPI'],
-    frontend: ['React.js', 'HTML', 'CSS'],
-    tools: ['Git', 'Docker', 'Shell scripting'],
-    databases: ['MS SQL Server', 'PostgreSQL']
+    languages: ['Java', 'Go', 'Python', 'C/C++'],
+    backend: ['Spring Boot', 'RESTful APIs', 'Microservices Architecture'],
+    frontend: ['React.js', 'Streamlit', 'HTML/CSS'],
+    databases: ['MySQL', 'SQL Server', 'Oracle', 'H2'],
+    devops: ['Docker', 'Kubernetes', 'Linux', 'Shell Scripting', 'Git', 'GitHub', 'NGINX', 'Postman', 'Agile'],
+    ai: ['Generative AI', 'Agentic AI', 'Prompt Engineering', 'Machine Learning'],
+    core: ['Data Structures & Algorithms', 'DBMS', 'Operating Systems', 'Computer Networks'],
   },
-  
-experience: [
+
+  experience: [
     {
-      role: "Software Engineer II",
-      company: "Dell Technologies",
-      period: "Jul 2025 – Present",
-      location: "Bengaluru, Karnataka, India",
+      role: 'Software Engineer II',
+      company: 'Dell Technologies',
+      period: 'Jul 2025 – Present',
+      location: 'Bangalore, Karnataka',
       bullets: [
-        "Develop and maintain microservices for the Dell Automation Platform (DAP) using Java, Spring Boot, and Go",
-        "Automate DAP/microservice tasks with shell scripting to improve operational efficiency and reduce repetitive workloads",
-        "Focus on backend service orchestration, integration, and secure service communication within a microservices architecture"
+        'Engineered end-to-end Nutanix cluster deployment workflows for Dell Private Cloud (DPC) using Java and Spring Boot microservices, achieving stable production rollouts across multiple release cycles.',
+        'Built multiple RESTful APIs for infrastructure validation, configuration retrieval, and cluster provisioning, reducing manual checks and strengthening backend automation.',
+        'Developed automated deployment prechecks and validation modules to verify cluster readiness, reducing deployment failures and rollback incidents.',
       ]
     },
     {
-      role: "Software Engineer Intern",
-      company: "Dell Technologies",
-      period: "Jul 2024 – May 2025",
-      location: "Bengaluru, Karnataka, India",
+      role: 'Software Engineer Intern',
+      company: 'Dell Technologies',
+      period: 'Jul 2024 – May 2025',
+      location: 'Bangalore, Karnataka',
       bullets: [
-        "Developed Spring Boot microservices with secure inter‑service communication using IAM and mutual TLS (mTLS)",
-        "Collaborated with teams to integrate services into existing architecture; streamlined deployment with DevOps tooling"
+        'Designed and integrated Spring Boot microservices with identity access management and mTLS-based mutual authentication, enabling secure inter-service communication.',
+        'Automated CI/CD workflows using Docker and DevOps tooling, accelerating release velocity within an Agile process.',
       ]
     },
     {
-      role: "Trainee Technical (Technical Consultant)",
-      company: "Acxiom Consulting Pvt. Ltd.",
-      period: "Feb 2023 – Aug 2023",
-      location: "Noida, Uttar Pradesh, India",
+      role: 'Software Developer – Trainee',
+      company: 'Acxiom Consulting Pvt. Ltd.',
+      period: 'Feb 2023 – Aug 2023',
+      location: 'Noida, Uttar Pradesh',
       bullets: [
-        "Engineered user‑friendly UI and business logic for Dynamics 365 ERP; reduced data entry errors by ~40%",
-        "Implemented queries and stored procedures to reduce response time by ~20%",
-        "Guided and mentored 10+ coworkers in skills and knowledge development"
-      ]
-    },
-    {
-      role: "Teaching Assistant",
-      company: "Dr B R Ambedkar National Institute of Technology, Jalandhar",
-      period: "Jan 2024 – Jun 2024",
-      location: "Jalandhar, Punjab, India",
-      bullets: [
-        "Assisted Dr. Somesula Manoj Kumar in Data Mining & Data Warehousing instruction for ~30 students, including labs"
-      ]
-    },
-    {
-      role: "Teaching Assistant",
-      company: "Dr B R Ambedkar National Institute of Technology, Jalandhar",
-      period: "Aug 2023 – Dec 2023",
-      location: "Jalandhar, Punjab, India",
-      bullets: [
-        "Assisted Dr. Renu Dhir and Dr. Jagdeep Kaur for Software Engineering and Information Security courses; 50+ students"
+        'Developed business logic and UI components for Dynamics 365 ERP using OOP principles, reducing data entry errors by 40%.',
+        'Optimized SQL queries and stored procedures in SQL Server, improving database response time by 20%.',
       ]
     }
   ],
 
-  
-projects: [
+  projects: [
     {
-      name: "TeleMock – Secure Telemetry Pipeline Simulator",
-      summary:
-        "Built a secure telemetry pipeline that enabled reliable data streaming, validation, and real-time visualization for distributed systems.",
-      stack: ["Spring Boot", "Python", "React", "NGINX", "mTLS", "Docker"],
-      link: "#"
+      name: 'AI PR Reviewer',
+      summary: 'Built an agentic AI code review system using a LangGraph StateGraph-orchestrated multi-agent pipeline (Planner, Reviewer, Critic, Commenter) with typed state, conditional routing, and per-node retry to parse diffs, run static checks, and post inline feedback via Gemini and LangChain. Implemented anti-hallucination prompt contracts, issue deduplication, severity-based budgeting, and REQUEST_CHANGES merge gating with resilient fallback paths for LLM failures; automated via GitHub Actions.',
+      stack: ['Python', 'LangGraph', 'LangChain', 'Google Gemini API', 'GitHub Actions'],
+      link: 'https://github.com/shashiazad/ai-pr-reviewer',
+      year: '2025',
     },
     {
-      name: "Ceditor – Text Editor",
-      summary:
-        "Basic text editor in C with essential editing features, search functionality, and syntax highlighting",
-      stack: ["C Programming"],
-      link: "#"
+      name: 'TeleMock – Secure Telemetry Pipeline Simulator',
+      summary: 'Architected a telemetry data pipeline using Python clients and Spring Boot RESTful microservices for real-time data streaming and validation across distributed services. Configured NGINX reverse proxy with mTLS and built a React.js dashboard with H2 in-memory database for real-time telemetry visualization.',
+      stack: ['Spring Boot', 'Python', 'React', 'NGINX', 'mTLS', 'Docker'],
+      link: 'https://github.com/shashiazad/idrac',
+      year: 'Aug – Nov 2024',
     },
     {
-      name: "WhatsApp Chat Analyzer",
-      summary:
-        "Streamlit app to preprocess chats to Pandas DataFrame, visualize trends and counts (messages, words, notifications, media, word frequency) with Matplotlib",
-      stack: ["Python", "Streamlit", "Pandas", "Matplotlib", "Machine Learning"],
-      link: "#"
+      name: 'WhatsApp Chat Analyzer',
+      summary: 'Built a data analysis tool with Streamlit and Matplotlib that preprocesses chat exports into Pandas DataFrames for message frequency, word count, and trend analysis.',
+      stack: ['Python', 'Streamlit', 'Pandas', 'Matplotlib'],
+      link: '#',
+      year: 'Aug 2023',
     }
+  ],
+
+  achievements: [
+    'Qualified GATE in Computer Science in 2022 and 2023.',
+    'Runner-up in Smart India Hackathon 2022 Grand Finale.',
+    'Teaching Assistant for 80+ students across two semesters at NIT Jalandhar.',
   ],
 
   contact: {
