@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const SYSTEM_PROMPT = `You are Siya, Shashi Shekhar Azad's personal AI assistant on his portfolio website. You are friendly, professional, and helpful.
 
@@ -40,25 +39,53 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Messages are required.' }, { status: 400 });
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+    // Build conversation history
+    const contents = [
+      {
+        role: 'user',
+        parts: [{ text: 'System instructions: ' + SYSTEM_PROMPT }]
+      },
+      {
+        role: 'model',
+        parts: [{ text: 'Understood! I am Siya, Shashi\'s AI assistant. I\'ll help visitors learn about Shashi and connect with him.' }]
+      },
+      ...messages.slice(0, -1).map((m: { role: string; content: string }) => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.content }]
+      })),
+      {
+        role: 'user',
+        parts: [{ text: messages[messages.length - 1].content }]
+      }
+    ];
 
-    const chat = model.startChat({
-      history: [
-        { role: 'user', parts: [{ text: 'System instructions: ' + SYSTEM_PROMPT }] },
-        { role: 'model', parts: [{ text: 'Understood! I am Siya, Shashi\'s AI assistant. I\'ll help visitors learn about Shashi and connect with him.' }] },
-        ...messages.slice(0, -1).map((m: { role: string; content: string }) => ({
-          role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.content }],
-        })),
-      ],
+    // Direct REST API call to Gemini
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: contents,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1000,
+        }
+      })
     });
 
-    const lastMessage = messages[messages.length - 1];
-    const result = await chat.sendMessage(lastMessage.content);
-    const response = result.response.text();
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Gemini API error:', response.status, errorData);
+      return NextResponse.json({ 
+        error: `Gemini API error: ${response.status} - ${errorData}` 
+      }, { status: response.status });
+    }
 
-    return NextResponse.json({ message: response });
+    const data = await response.json();
+    const message = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I couldn\'t generate a response.';
+
+    return NextResponse.json({ message });
   } catch (error: unknown) {
     console.error('Chat API error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
