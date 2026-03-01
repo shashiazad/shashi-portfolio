@@ -59,33 +59,45 @@ export async function POST(req: NextRequest) {
       }
     ];
 
-    // Direct REST API call to Gemini
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: contents,
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1000,
-        }
-      })
-    });
+    // Try multiple model names in order of preference (models get deprecated over time)
+    const modelNames = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-pro'];
+    let lastError = '';
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Gemini API error:', response.status, errorData);
-      return NextResponse.json({ 
-        error: `Gemini API error: ${response.status} - ${errorData}` 
-      }, { status: response.status });
+    for (const modelName of modelNames) {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: contents,
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 1000,
+            }
+          })
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const message = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I couldn\'t generate a response.';
+        return NextResponse.json({ message });
+      }
+
+      const errorText = await response.text();
+      console.error(`Model ${modelName} failed:`, response.status, errorText);
+      lastError = errorText;
+
+      // Only retry on 404 (model not found), break on other errors
+      if (response.status !== 404) {
+        return NextResponse.json({ error: `Gemini API error: ${response.status} - ${errorText}` }, { status: response.status });
+      }
     }
 
-    const data = await response.json();
-    const message = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, I couldn\'t generate a response.';
+    const message = 'Sorry, no available Gemini model found. Please check the API key and try again later.';
 
-    return NextResponse.json({ message });
+    return NextResponse.json({ error: message + ' Last error: ' + lastError }, { status: 500 });
   } catch (error: unknown) {
     console.error('Chat API error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';

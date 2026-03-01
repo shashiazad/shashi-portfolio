@@ -2,7 +2,44 @@
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, User, Loader2 } from 'lucide-react';
+
+function SiyaAvatar({ size = 18, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Hair */}
+      <ellipse cx="32" cy="28" rx="22" ry="24" fill="#1a1a2e" />
+      {/* Face */}
+      <ellipse cx="32" cy="32" rx="16" ry="18" fill="#fcd5ce" />
+      {/* Hair bangs */}
+      <path d="M16 24c2-8 10-14 16-14s14 6 16 14c-2-6-8-10-16-10S18 18 16 24z" fill="#1a1a2e" />
+      {/* Left eye */}
+      <ellipse cx="26" cy="32" rx="2.2" ry="2.5" fill="#2d3436" />
+      <ellipse cx="26.5" cy="31.5" rx="0.8" ry="0.8" fill="white" />
+      {/* Right eye */}
+      <ellipse cx="38" cy="32" rx="2.2" ry="2.5" fill="#2d3436" />
+      <ellipse cx="38.5" cy="31.5" rx="0.8" ry="0.8" fill="white" />
+      {/* Eyebrows */}
+      <path d="M23 28.5c1-1.5 3-2 5-1" stroke="#2d3436" strokeWidth="1" strokeLinecap="round" fill="none" />
+      <path d="M36 27.5c2-1 4-0.5 5 1" stroke="#2d3436" strokeWidth="1" strokeLinecap="round" fill="none" />
+      {/* Smile */}
+      <path d="M27 38c2 3 8 3 10 0" stroke="#e17055" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      {/* Blush */}
+      <ellipse cx="22" cy="37" rx="3" ry="1.8" fill="#fab1a0" opacity="0.5" />
+      <ellipse cx="42" cy="37" rx="3" ry="1.8" fill="#fab1a0" opacity="0.5" />
+      {/* Hair sides */}
+      <path d="M12 28c0 10 2 18 6 22c-4-4-6-12-6-22z" fill="#1a1a2e" />
+      <path d="M52 28c0 10-2 18-6 22c4-4 6-12 6-22z" fill="#1a1a2e" />
+    </svg>
+  );
+}
 
 interface Message {
   role: 'user' | 'assistant';
@@ -91,7 +128,7 @@ export default function SiyaChat() {
             {/* Header */}
             <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white shrink-0">
               <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
-                <Bot size={18} />
+                <SiyaAvatar size={24} />
               </div>
               <div>
                 <p className="font-semibold text-sm leading-tight">Siya</p>
@@ -115,7 +152,7 @@ export default function SiyaChat() {
                 >
                   {msg.role === 'assistant' && (
                     <div className="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <Bot size={14} className="text-emerald-600 dark:text-emerald-400" />
+                      <SiyaAvatar size={18} />
                     </div>
                   )}
                   <div
@@ -138,7 +175,7 @@ export default function SiyaChat() {
               {loading && (
                 <div className="flex gap-2 justify-start">
                   <div className="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-                    <Bot size={14} className="text-emerald-600 dark:text-emerald-400" />
+                    <SiyaAvatar size={18} />
                   </div>
                   <div className="bg-slate-100 dark:bg-white/5 px-4 py-3 rounded-2xl rounded-bl-md">
                     <Loader2 size={16} className="animate-spin text-emerald-500" />
