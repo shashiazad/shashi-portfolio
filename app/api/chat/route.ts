@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     ];
 
     // Try multiple model names in order of preference (models get deprecated over time)
-    const modelNames = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-pro'];
+    const modelNames = ['gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-pro'];
     let lastError = '';
 
     for (const modelName of modelNames) {
