@@ -144,7 +144,7 @@ export default function Hero() {
             >
               {[
                 { value: '2+', label: 'Years Exp.' },
-                { value: 'M.Tech', label: 'CSE, NIT' },
+                { value: 'M.Tech', label: 'CSE, NIT Jalandhar' },
                 { value: '5+', label: 'Projects' },
               ].map((stat) => (
                 <div key={stat.label} className="text-center sm:text-left">
