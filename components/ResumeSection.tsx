@@ -2,7 +2,7 @@
 
 import Section from './Section';
 import { profile } from '@/data/profile';
-import { FileText, Download, Mail, Linkedin, Github, MapPin, Calendar, Award, GraduationCap, Briefcase, FolderGit2 } from 'lucide-react';
+import { FileText, Download, Mail, Linkedin, Github, MapPin, Calendar, Award, GraduationCap, Briefcase, FolderGit2, BookOpen } from 'lucide-react';
 
 export default function ResumeSection() {
   return (
@@ -33,6 +33,9 @@ export default function ResumeSection() {
             </a>
             <a href={profile.contact.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
               <Github size={13} /> shashiazad
+            </a>
+            <a href={profile.contact.medium} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+              <BookOpen size={13} /> Medium
             </a>
           </div>
         </div>

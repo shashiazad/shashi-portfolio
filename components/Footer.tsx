@@ -1,11 +1,12 @@
 'use client';
 
 import { profile } from '@/data/profile';
-import { Github, Linkedin, Instagram, Mail, Heart } from 'lucide-react';
+import { Github, Linkedin, Instagram, Mail, Heart, BookOpen } from 'lucide-react';
 
 const socials = [
   { href: profile.contact.github, icon: <Github size={16} />, label: 'GitHub' },
   { href: profile.contact.linkedin, icon: <Linkedin size={16} />, label: 'LinkedIn' },
+  { href: profile.contact.medium, icon: <BookOpen size={16} />, label: 'Medium' },
   { href: profile.contact.instagram, icon: <Instagram size={16} />, label: 'Instagram' },
   { href: `mailto:${profile.contact.email}`, icon: <Mail size={16} />, label: 'Email' },
 ];

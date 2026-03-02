@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Section from './Section';
 import { profile } from '@/data/profile';
-import { Mail, Github, Linkedin, Instagram, MapPin, Send, MessageSquare, ArrowUpRight } from 'lucide-react';
+import { Mail, Github, Linkedin, Instagram, MapPin, Send, MessageSquare, ArrowUpRight, BookOpen } from 'lucide-react';
 
 const socialLinks = [
   {
@@ -25,6 +25,13 @@ const socialLinks = [
     href: profile.contact.github,
     icon: <Github size={18} />,
     value: 'github.com/shashiazad',
+    external: true,
+  },
+  {
+    label: 'Medium',
+    href: profile.contact.medium,
+    icon: <BookOpen size={18} />,
+    value: 'shashisa.medium.com',
     external: true,
   },
   {
