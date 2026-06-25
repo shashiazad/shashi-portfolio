@@ -13,31 +13,34 @@ const cardStyles = [
 
 function getGridClasses(projects: any[]) {
   const total = projects.length;
-  
-  if (total === 4) {
-    // Case 2: 4 cards -> 2 side-by-side and next row 2 side-by-side
-    return projects.map(() => 'col-span-1');
-  } else if (total === 5) {
-    // Case 2: 5 cards -> 1 expanded and 2 side-by-side in multiple rows
-    // Find the project with the longest summary to expand it
-    let longestIdx = 0;
-    let maxLen = 0;
-    projects.forEach((p, i) => {
-      if (p.summary.length > maxLen) {
-        maxLen = p.summary.length;
-        longestIdx = i;
+  if (total === 0) return [];
+  if (total === 1) return ['sm:col-span-2'];
+
+  const THRESHOLD = 400; // Character threshold to consider a project large
+  const lengths = projects.map((p) => p.summary.length);
+
+  // Initially classify based on the threshold
+  const isLarge = lengths.map((len) => len >= THRESHOLD);
+
+  // Calculate the number of small projects
+  const numSmall = isLarge.filter((large) => !large).length;
+
+  // To prevent layout gaps in a 2-column CSS Grid, the count of col-span-1 (small) cards
+  // must be even. If odd, we toggle the classification of the card closest to the threshold.
+  if (numSmall % 2 !== 0) {
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    lengths.forEach((len, idx) => {
+      const diff = Math.abs(len - THRESHOLD);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
       }
     });
-    return projects.map((_, i) => (i === longestIdx ? 'sm:col-span-2' : 'col-span-1'));
-  } else {
-    // Case 1 (General fallback, e.g. 2 or 3 cards):
-    // If cards are small (short details <= 300 chars), they stay side-by-side (col-span-1).
-    // If they have more details, they expand to full width (sm:col-span-2).
-    return projects.map((p) => {
-      const isLong = p.summary.length > 300;
-      return isLong ? 'sm:col-span-2' : 'col-span-1';
-    });
+    isLarge[closestIdx] = !isLarge[closestIdx];
   }
+
+  return isLarge.map((large) => (large ? 'sm:col-span-2' : 'col-span-1'));
 }
 
 export default function Projects() {
@@ -57,7 +60,7 @@ export default function Projects() {
       </p>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 grid-flow-row-dense">
         {profile.projects.map((p, i) => (
           <motion.article
             key={p.name}
