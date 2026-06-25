@@ -1,0 +1,39 @@
+<svg 
+  xmlns="http://www.w3.org/2000/svg" 
+  viewBox="0 0 512 512" 
+  width="100%" 
+  height="100%"
+>
+  <defs>
+    {/* Vibrant Apple Linear Gradient */}
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#0071e3" />
+      <stop offset="50%" stopColor="#af52de" />
+      <stop offset="100%" stopColor="#ff2d55" />
+    </linearGradient>
+    {/* Glowing Filter */}
+    <filter id="favGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  {/* Apple Space Black Circular Background with Gradient Rim */}
+  <circle cx="256" cy="256" r="240" fill="#0b0b0c" stroke="url(#favGrad)" strokeWidth="12" />
+
+  {/* Sleek Code Brackets and Initials with Apple Gradient and Glow */}
+  <text 
+    x="50%" 
+    y="51%" 
+    dominantBaseline="middle" 
+    textAnchor="middle" 
+    fontFamily="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif" 
+    fontWeight="900" 
+    fontSize="130" 
+    fill="url(#favGrad)" 
+    letterSpacing="-4px"
+    filter="url(#favGlow)"
+  >
+    &lt;SA&gt;
+  </text>
+</svg>
