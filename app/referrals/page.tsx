@@ -20,22 +20,27 @@ export default function ReferralsPage() {
     <>
       <Toaster position="top-right" richColors closeButton />
 
-      <div className="min-h-screen py-16 md:py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-[#000000] text-[#f5f5f7] py-16 md:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[980px] mx-auto">
           {/* Page Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-              <span className="gradient-text">Referrals & Jobs</span>
+            <p className="text-[14px] font-medium tracking-widest uppercase text-[#86868b] mb-4">
+              Career Support
+            </p>
+            <h1 className="text-[40px] sm:text-[56px] font-semibold tracking-tight text-[#f5f5f7] leading-tight">
+              Referral Portal
             </h1>
-            <p className="mt-4 text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Looking for a referral? Shashi can refer you for jobs at <strong>Dell Technologies, Intel, NVIDIA, and Qualcomm</strong>. 
-              Fill out the <a href="#referral-form" className="text-brand-600 dark:text-brand-400 hover:underline font-medium">referral request form </a> 
-              with any job link you find on company career pages, or browse open positions below.
+            <p className="mt-4 text-[17px] sm:text-[19px] leading-[1.58] text-[#86868b] max-w-2xl mx-auto">
+              Looking for a referral? Shashi can refer you for open positions at{' '}
+              <strong className="text-[#f5f5f7] font-semibold">
+                Dell Technologies, Intel, NVIDIA, and Qualcomm
+              </strong>
+              . Simply fill out the referral request form with any job link, or browse open positions listed below.
             </p>
           </motion.div>
 
@@ -45,16 +50,16 @@ export default function ReferralsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex items-center gap-3 mb-6"
+              className="flex items-center gap-3.5 mb-6"
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center shrink-0">
-                <Users size={18} className="text-white" />
+              <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-[#86868b] shrink-0">
+                <Users size={18} />
               </div>
-              <h2 id="referral-form-heading" className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 id="referral-form-heading" className="text-[24px] font-semibold tracking-tight text-[#f5f5f7]">
                 Request a Referral
               </h2>
             </motion.div>
-            <div className="hr-gradient mb-8" />
+            <div className="apple-divider mb-8" />
 
             <ReferralForm
               prefillJobRef={prefillJobRef}
@@ -69,16 +74,16 @@ export default function ReferralsPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="flex items-center gap-3 mb-6"
+              className="flex items-center gap-3.5 mb-6"
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
-                <Briefcase size={18} className="text-white" />
+              <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-[#86868b] shrink-0">
+                <Briefcase size={18} />
               </div>
-              <h2 id="jobs-heading" className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 id="jobs-heading" className="text-[24px] font-semibold tracking-tight text-[#f5f5f7]">
                 Open Positions
               </h2>
             </motion.div>
-            <div className="hr-gradient mb-8" />
+            <div className="apple-divider mb-8" />
 
             <JobsList onJobClick={handleJobClick} />
           </section>

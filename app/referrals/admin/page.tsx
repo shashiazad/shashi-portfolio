@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import type { Job, ReferralRequest, ReferralAnalysis, CandidateFeedback } from '@/types/referral';
 
-const inputCls = 'rounded-xl px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm outline-none focus:border-brand-500 transition-all';
+const inputCls = 'rounded-xl px-4 py-2.5 bg-white/[0.04] border border-white/10 text-[#f5f5f7] placeholder-[#424245] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all w-full';
 
 export default function AdminPage() {
   // Tabs
@@ -119,7 +119,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteJob = async (id: string) => {
-    if (!confirm('Deactivate this job?')) return;
+    if (!confirm('Are you sure you want to permanently delete this job post? This action cannot be undone.')) return;
     const res = await fetch('/api/admin/jobs', { method: 'DELETE', headers: jsonHeaders, body: JSON.stringify({ id }) });
     if (res.ok) fetchJobs();
   };
@@ -318,17 +318,17 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen py-16 md:py-24 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#000000] text-[#f5f5f7] py-16 md:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <h1 className="text-3xl font-bold gradient-text mb-8">Referrals Admin</h1>
+          <h1 className="text-3xl font-bold text-[#f5f5f7] mb-8 tracking-tight">Referrals Admin</h1>
 
           {/* Tabs */}
           <div className="flex gap-2 mb-8">
-            <button onClick={() => setTab('referrals')} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === 'referrals' ? 'bg-brand-500 text-white shadow-glow' : 'glass-card text-slate-600 dark:text-slate-300'}`}>
+            <button onClick={() => setTab('referrals')} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === 'referrals' ? 'bg-[#0071e3] text-white shadow-glow' : 'bg-white/[0.04] text-[#86868b] border border-white/10 hover:text-[#f5f5f7]'}`}>
               <Users size={16} /> Referrals ({referrals.length})
             </button>
-            <button onClick={() => setTab('jobs')} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === 'jobs' ? 'bg-brand-500 text-white shadow-glow' : 'glass-card text-slate-600 dark:text-slate-300'}`}>
+            <button onClick={() => setTab('jobs')} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === 'jobs' ? 'bg-[#0071e3] text-white shadow-glow' : 'bg-white/[0.04] text-[#86868b] border border-white/10 hover:text-[#f5f5f7]'}`}>
               <Briefcase size={16} /> Jobs ({jobs.length})
             </button>
           </div>
@@ -339,35 +339,35 @@ export default function AdminPage() {
               {/* Toolbar: Search, Date Filter, CSV */}
               <div className="flex flex-wrap items-end gap-3 mb-6">
                 <div className="flex-1 min-w-[200px]">
-                  <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Search</label>
+                  <label className="block text-xs font-medium text-[#86868b] mb-1">Search</label>
                   <div className="relative">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#86868b]" />
                     <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Name or email..." className={`${inputCls} pl-9 w-full`} />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">From</label>
+                  <label className="block text-xs font-medium text-[#86868b] mb-1">From</label>
                   <div className="relative">
-                    <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#86868b]" />
                     <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className={`${inputCls} pl-9`} />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">To</label>
+                  <label className="block text-xs font-medium text-[#86868b] mb-1">To</label>
                   <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className={inputCls} />
                 </div>
-                <button onClick={handleExportCSV} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-all border border-brand-200 dark:border-brand-500/20">
+                <button onClick={handleExportCSV} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-[#2997ff] hover:bg-[#2997ff]/10 transition-all border border-white/10 bg-white/[0.04]">
                   <Download size={14} /> CSV
                 </button>
               </div>
 
-              <p className="text-xs text-slate-400 mb-4">{filteredReferrals.length} of {referrals.length} referrals shown</p>
+              <p className="text-xs text-[#86868b] mb-4">{filteredReferrals.length} of {referrals.length} referrals shown</p>
 
               {/* Referral Table */}
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead>
-                    <tr className="text-xs text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-white/10">
+                    <tr className="text-xs text-[#86868b] border-b border-white/10">
                       <th className="py-3 px-3 w-8"></th>
                       <th className="py-3 px-3">Date</th>
                       <th className="py-3 px-3">Name</th>
@@ -396,29 +396,29 @@ export default function AdminPage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: isDeleting ? 0.3 : 1 }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors"
+                            className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
                           >
                             <td className="py-3 px-3">
-                              <button onClick={() => setExpandedId(isExpanded ? null : r.id)} className="p-1 rounded text-slate-400 hover:text-brand-500 transition-colors" aria-label="Toggle details">
+                              <button onClick={() => setExpandedId(isExpanded ? null : r.id)} className="p-1 rounded text-[#86868b] hover:text-[#0071e3] transition-colors" aria-label="Toggle details">
                                 {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                               </button>
                             </td>
-                            <td className="py-3 px-3 text-xs text-slate-500 whitespace-nowrap">{fmtDate(r.created_at)}</td>
-                            <td className="py-3 px-3 font-medium text-slate-900 dark:text-white whitespace-nowrap">{r.name}</td>
-                            <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{r.email}</td>
-                            <td className="py-3 px-3 text-slate-600 dark:text-slate-300 whitespace-nowrap">{r.mobile}</td>
-                            <td className="py-3 px-3 text-center">{r.years_experience}</td>
+                            <td className="py-3 px-3 text-xs text-[#86868b] whitespace-nowrap">{fmtDate(r.created_at)}</td>
+                            <td className="py-3 px-3 font-medium text-[#f5f5f7] whitespace-nowrap">{r.name}</td>
+                            <td className="py-3 px-3 text-[#a1a1a6]">{r.email}</td>
+                            <td className="py-3 px-3 text-[#a1a1a6] whitespace-nowrap">{r.mobile}</td>
+                            <td className="py-3 px-3 text-center text-[#f5f5f7]">{r.years_experience}</td>
                             <td className="py-3 px-3">
                               <div className="flex flex-wrap gap-1 max-w-[200px]">
                                 {r.tech_stacks?.slice(0, 3).map((t) => (
-                                  <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-600 dark:text-brand-400">{t}</span>
+                                  <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-[#0071e3]/10 text-[#2997ff]">{t}</span>
                                 ))}
                                 {r.tech_stacks && r.tech_stacks.length > 3 && (
-                                  <span className="text-[10px] text-slate-400">+{r.tech_stacks.length - 3}</span>
+                                  <span className="text-[10px] text-[#86868b]">+{r.tech_stacks.length - 3}</span>
                                 )}
                               </div>
                             </td>
-                            <td className="py-3 px-3 text-xs text-slate-500 max-w-[160px] truncate" title={jobRef}>{jobRef}</td>
+                            <td className="py-3 px-3 text-xs text-[#86868b] max-w-[160px] truncate" title={jobRef}>{jobRef}</td>
                             <td className="py-3 px-3">
                               <div className="flex items-center gap-1">
                                 {analysis && (
@@ -427,12 +427,12 @@ export default function AdminPage() {
                                   </span>
                                 )}
                                 {feedback && (
-                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400">FB</span>
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-[#af52de]">FB</span>
                                 )}
                               </div>
                             </td>
                             <td className="py-3 px-3">
-                              <button onClick={() => handleViewResume(r.resume_url)} className="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:underline">
+                              <button onClick={() => handleViewResume(r.resume_url)} className="inline-flex items-center gap-1 text-xs text-[#2997ff] hover:underline">
                                 <ExternalLink size={10} /> View
                               </button>
                             </td>
@@ -441,7 +441,7 @@ export default function AdminPage() {
                                 <button
                                   onClick={() => handleAnalyze(r.id)}
                                   disabled={analyzingId === r.id}
-                                  className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 transition-all disabled:opacity-30"
+                                  className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium text-[#2997ff] hover:bg-[#2997ff]/10 transition-all disabled:opacity-30"
                                   title="AI Analyze"
                                 >
                                   {analyzingId === r.id ? <Loader2 size={12} className="animate-spin" /> : <Brain size={12} />}
@@ -449,7 +449,7 @@ export default function AdminPage() {
                                 <button
                                   onClick={() => setConfirmAction({ id: r.id, label: 'Reoffered: Yes' })}
                                   disabled={isDeleting}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all disabled:opacity-30"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#30d158] hover:bg-[#30d158]/10 transition-all disabled:opacity-30"
                                   title="Reoffered: Yes — delete entry"
                                 >
                                   <CheckCircle size={12} /> Yes
@@ -457,7 +457,7 @@ export default function AdminPage() {
                                 <button
                                   onClick={() => setConfirmAction({ id: r.id, label: 'Reoffered: No' })}
                                   disabled={isDeleting}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#ff453a] hover:bg-[#ff453a]/10 transition-all disabled:opacity-30"
                                   title="Reoffered: No — delete entry"
                                 >
                                   <XCircle size={12} /> No
@@ -472,27 +472,27 @@ export default function AdminPage() {
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
                               exit={{ opacity: 0, height: 0 }}
-                              className="bg-slate-50/50 dark:bg-white/[0.02]"
+                              className="bg-white/[0.01]"
                             >
                               <td colSpan={11} className="px-6 py-4">
                                 {/* Basic Details */}
                                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2 text-xs mb-4">
-                                  <div><span className="font-semibold text-slate-500">ID:</span> <span className="text-slate-700 dark:text-slate-300 font-mono text-[10px]">{r.id}</span></div>
-                                  <div><span className="font-semibold text-slate-500">Address:</span> <span className="text-slate-700 dark:text-slate-300">{r.address || '—'}</span></div>
-                                  <div><span className="font-semibold text-slate-500">College:</span> <span className="text-slate-700 dark:text-slate-300">{r.college || '—'}</span></div>
-                                  <div><span className="font-semibold text-slate-500">Education:</span> <span className="text-slate-700 dark:text-slate-300">{r.latest_education || '—'}</span></div>
-                                  <div><span className="font-semibold text-slate-500">Job Link:</span> <span className="text-slate-700 dark:text-slate-300 break-all">{r.job_link || '—'}</span></div>
-                                  <div><span className="font-semibold text-slate-500">Job ID / Company:</span> <span className="text-slate-700 dark:text-slate-300">{r.job_id_with_company || '—'}</span></div>
-                                  <div><span className="font-semibold text-slate-500">Resume Path:</span> <span className="text-slate-700 dark:text-slate-300 font-mono text-[10px] break-all">{r.resume_url}</span></div>
-                                  <div><span className="font-semibold text-slate-500">All Tech:</span> <span className="text-slate-700 dark:text-slate-300">{r.tech_stacks?.join(', ') || '—'}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">ID:</span> <span className="text-[#a1a1a6] font-mono text-[10px]">{r.id}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">Address:</span> <span className="text-[#f5f5f7]">{r.address || '—'}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">College:</span> <span className="text-[#f5f5f7]">{r.college || '—'}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">Education:</span> <span className="text-[#f5f5f7]">{r.latest_education || '—'}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">Job Link:</span> <span className="text-[#f5f5f7] break-all">{r.job_link || '—'}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">Job ID / Company:</span> <span className="text-[#f5f5f7]">{r.job_id_with_company || '—'}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">Resume Path:</span> <span className="text-[#f5f5f7] font-mono text-[10px] break-all">{r.resume_url}</span></div>
+                                  <div><span className="font-semibold text-[#86868b]">All Tech:</span> <span className="text-[#f5f5f7]">{r.tech_stacks?.join(', ') || '—'}</span></div>
                                 </div>
 
                                 {/* AI Analysis Panel */}
                                 {analysis && (
-                                  <div className="glass-card rounded-xl p-4 mb-4">
+                                  <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 mb-4">
                                     <div className="flex items-center gap-2 mb-3">
-                                      <Brain size={14} className="text-blue-500" />
-                                      <h4 className="text-sm font-semibold text-slate-900 dark:text-white">AI Analysis</h4>
+                                      <Brain size={14} className="text-[#2997ff]" />
+                                      <h4 className="text-sm font-semibold text-[#f5f5f7]">AI Analysis</h4>
                                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${scoreBadge(analysis.match_score)}`}>
                                         {analysis.match_label}
                                         {analysis.match_score !== null && analysis.match_score !== undefined ? ` (${analysis.match_score}/100)` : ''}
@@ -500,24 +500,24 @@ export default function AdminPage() {
                                       {confidenceBadge(analysis._meta as unknown as Record<string, unknown>)}
                                     </div>
 
-                                    <p className="text-xs text-slate-700 dark:text-slate-300 mb-3">{analysis.summary}</p>
+                                    <p className="text-xs text-[#a1a1a6] mb-3">{analysis.summary}</p>
 
                                     {/* Skills */}
                                     <div className="flex flex-wrap gap-1 mb-2">
                                       {analysis.skill_alignment?.matched?.map((s) => (
-                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">{s}</span>
+                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-[#30d158]/10 text-[#30d158]">{s}</span>
                                       ))}
                                       {analysis.skill_alignment?.missing?.map((s) => (
-                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-500">{s}</span>
+                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-[#ff453a]/10 text-[#ff453a]">{s}</span>
                                       ))}
                                       {analysis.skill_alignment?.additional?.map((s) => (
-                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">{s}</span>
+                                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-[#0071e3]/10 text-[#2997ff]">{s}</span>
                                       ))}
                                     </div>
 
                                     {/* Experience */}
                                     {analysis.experience_fit?.assessment && (
-                                      <p className="text-[10px] text-slate-500 mb-2">
+                                      <p className="text-[10px] text-[#86868b] mb-2">
                                         Experience: {analysis.experience_fit.candidate_years != null ? `${analysis.experience_fit.candidate_years} yrs` : '?'}
                                         {analysis.experience_fit.required_range ? ` / ${analysis.experience_fit.required_range} required` : ''}
                                         {' — '}{analysis.experience_fit.assessment}
@@ -528,23 +528,23 @@ export default function AdminPage() {
                                     <div className="grid sm:grid-cols-2 gap-3">
                                       {analysis.highlights?.length > 0 && (
                                         <div>
-                                          <p className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 mb-1">Highlights</p>
+                                          <p className="text-[10px] font-semibold text-[#30d158] mb-1">Highlights</p>
                                           {analysis.highlights.map((h, i) => (
-                                            <p key={i} className="text-[10px] text-slate-600 dark:text-slate-400 pl-2 border-l-2 border-emerald-300 mb-1">{h}</p>
+                                            <p key={i} className="text-[10px] text-[#a1a1a6] pl-2 border-l-2 border-[#30d158]/50 mb-1">{h}</p>
                                           ))}
                                         </div>
                                       )}
                                       {analysis.concerns?.length > 0 && (
                                         <div>
-                                          <p className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 mb-1">Concerns</p>
+                                          <p className="text-[10px] font-semibold text-[#ff9f0a] mb-1">Concerns</p>
                                           {analysis.concerns.map((c, i) => (
-                                            <p key={i} className="text-[10px] text-slate-600 dark:text-slate-400 pl-2 border-l-2 border-amber-300 mb-1">{c}</p>
+                                            <p key={i} className="text-[10px] text-[#a1a1a6] pl-2 border-l-2 border-[#ff9f0a]/50 mb-1">{c}</p>
                                           ))}
                                         </div>
                                       )}
                                     </div>
 
-                                    <p className="text-[9px] text-slate-400 mt-2">
+                                    <p className="text-[9px] text-[#86868b] mt-2">
                                       Model: {(analysis._meta as unknown as Record<string, unknown>)?.model_version as string ?? 'unknown'}
                                       {' | Analyzed: '}{(analysis._meta as unknown as Record<string, unknown>)?.analyzed_at ? fmtDate((analysis._meta as unknown as Record<string, unknown>).analyzed_at as string) : '—'}
                                     </p>
@@ -552,21 +552,21 @@ export default function AdminPage() {
                                 )}
 
                                 {/* AI Feedback Panel */}
-                                <div className="glass-card rounded-xl p-4">
+                                <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4">
                                   <div className="flex items-center gap-2 mb-3">
-                                    <MessageSquare size={14} className="text-purple-500" />
-                                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Candidate Feedback</h4>
+                                    <MessageSquare size={14} className="text-[#af52de]" />
+                                    <h4 className="text-sm font-semibold text-[#f5f5f7]">Candidate Feedback</h4>
                                   </div>
 
                                   {!feedback ? (
                                     <div className="flex items-center gap-3">
                                       {/* Tone selector */}
-                                      <div className="flex rounded-lg overflow-hidden border border-slate-200 dark:border-white/10">
+                                      <div className="flex rounded-lg overflow-hidden border border-white/10 bg-white/[0.02]">
                                         {(['encouraging', 'balanced', 'constructive'] as const).map((t) => (
                                           <button
                                             key={t}
                                             onClick={() => setFeedbackTone(t)}
-                                            className={`px-3 py-1.5 text-[10px] font-medium transition-all ${feedbackTone === t ? 'bg-purple-500 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5'}`}
+                                            className={`px-3 py-1.5 text-[10px] font-medium transition-all ${feedbackTone === t ? 'bg-[#af52de] text-white' : 'text-[#86868b] hover:bg-white/[0.04]'}`}
                                           >
                                             {t.charAt(0).toUpperCase() + t.slice(1)}
                                           </button>
@@ -575,7 +575,7 @@ export default function AdminPage() {
                                       <button
                                         onClick={() => handleGenerateFeedback(r.id)}
                                         disabled={generatingFeedbackId === r.id}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-purple-500 hover:bg-purple-600 transition-all disabled:opacity-50"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-[#af52de] hover:bg-[#af52de]/90 transition-all disabled:opacity-50"
                                       >
                                         {generatingFeedbackId === r.id ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                                         Generate Feedback
@@ -586,9 +586,9 @@ export default function AdminPage() {
                                       {/* Strengths */}
                                       {feedback.strengths?.length > 0 && (
                                         <div className="mb-2">
-                                          <p className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 mb-1">Strengths</p>
+                                          <p className="text-[10px] font-semibold text-[#30d158] mb-1">Strengths</p>
                                           {feedback.strengths.map((s, i) => (
-                                            <p key={i} className="text-[10px] text-slate-600 dark:text-slate-400 pl-2 border-l-2 border-emerald-300 mb-1">{s}</p>
+                                            <p key={i} className="text-[10px] text-[#a1a1a6] pl-2 border-l-2 border-[#30d158]/50 mb-1">{s}</p>
                                           ))}
                                         </div>
                                       )}
@@ -596,9 +596,9 @@ export default function AdminPage() {
                                       {/* Growth Areas */}
                                       {feedback.growth_areas?.length > 0 && (
                                         <div className="mb-2">
-                                          <p className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 mb-1">Growth Areas</p>
+                                          <p className="text-[10px] font-semibold text-[#ff9f0a] mb-1">Growth Areas</p>
                                           {feedback.growth_areas.map((g, i) => (
-                                            <p key={i} className="text-[10px] text-slate-600 dark:text-slate-400 pl-2 border-l-2 border-amber-300 mb-1">{g}</p>
+                                            <p key={i} className="text-[10px] text-[#a1a1a6] pl-2 border-l-2 border-[#ff9f0a]/50 mb-1">{g}</p>
                                           ))}
                                         </div>
                                       )}
@@ -606,36 +606,36 @@ export default function AdminPage() {
                                       {/* Suggestions */}
                                       {feedback.suggestions?.length > 0 && (
                                         <div className="mb-2">
-                                          <p className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 mb-1">Suggestions</p>
+                                          <p className="text-[10px] font-semibold text-[#2997ff] mb-1">Suggestions</p>
                                           {feedback.suggestions.map((s, i) => (
-                                            <p key={i} className="text-[10px] text-slate-600 dark:text-slate-400 pl-2 border-l-2 border-blue-300 mb-1">{s}</p>
+                                            <p key={i} className="text-[10px] text-[#a1a1a6] pl-2 border-l-2 border-[#2997ff]/50 mb-1">{s}</p>
                                           ))}
                                         </div>
                                       )}
 
                                       {/* Message */}
-                                      <div className="bg-slate-100 dark:bg-white/5 rounded-lg p-3 mt-2 mb-3">
-                                        <p className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line">{feedback.message}</p>
+                                      <div className="bg-white/[0.04] border border-white/5 rounded-lg p-3 mt-2 mb-3">
+                                        <p className="text-xs text-[#f5f5f7] whitespace-pre-line">{feedback.message}</p>
                                       </div>
 
                                       <div className="flex items-center gap-2">
-                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 capitalize">{feedback.tone}</span>
+                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#af52de]/10 text-[#af52de] capitalize font-medium">{feedback.tone}</span>
                                         <button
                                           onClick={() => handleCopyFeedback(feedback)}
-                                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] text-slate-500 hover:text-brand-500 hover:bg-brand-500/10 transition-all"
+                                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] text-[#86868b] hover:text-[#0071e3] hover:bg-[#0071e3]/10 transition-all"
                                         >
                                           <Copy size={10} /> Copy
                                         </button>
                                         {!(feedback._meta as unknown as Record<string, unknown>)?.shared_at && (
                                           <button
                                             onClick={() => handleShareFeedback(r.id)}
-                                            className="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] text-emerald-600 hover:bg-emerald-500/10 transition-all"
+                                            className="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] text-[#30d158] hover:bg-[#30d158]/10 transition-all"
                                           >
                                             <Share2 size={10} /> Share with Candidate
                                           </button>
                                         )}
                                         {Boolean((feedback._meta as unknown as Record<string, unknown>)?.shared_at) && (
-                                          <span className="text-[10px] text-emerald-500">
+                                          <span className="text-[10px] text-[#30d158]">
                                             Shared {fmtDate((feedback._meta as unknown as Record<string, unknown>).shared_at as string)}
                                           </span>
                                         )}
@@ -643,14 +643,14 @@ export default function AdminPage() {
                                       </div>
 
                                       {/* Re-generate with different tone */}
-                                      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200 dark:border-white/10">
-                                        <span className="text-[10px] text-slate-400">Re-generate:</span>
-                                        <div className="flex rounded-lg overflow-hidden border border-slate-200 dark:border-white/10">
+                                      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+                                        <span className="text-[10px] text-[#86868b]">Re-generate:</span>
+                                        <div className="flex rounded-lg overflow-hidden border border-white/10 bg-white/[0.02]">
                                           {(['encouraging', 'balanced', 'constructive'] as const).map((t) => (
                                             <button
                                               key={t}
                                               onClick={() => setFeedbackTone(t)}
-                                              className={`px-2 py-1 text-[10px] font-medium transition-all ${feedbackTone === t ? 'bg-purple-500 text-white' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5'}`}
+                                              className={`px-2 py-1 text-[10px] font-medium transition-all ${feedbackTone === t ? 'bg-[#af52de] text-white' : 'text-[#86868b] hover:bg-white/[0.04]'}`}
                                             >
                                               {t.charAt(0).toUpperCase() + t.slice(1)}
                                             </button>
@@ -659,7 +659,7 @@ export default function AdminPage() {
                                         <button
                                           onClick={() => handleGenerateFeedback(r.id)}
                                           disabled={generatingFeedbackId === r.id}
-                                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium text-purple-600 hover:bg-purple-500/10 transition-all disabled:opacity-50"
+                                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium text-[#af52de] hover:bg-[#af52de]/10 transition-all disabled:opacity-50"
                                         >
                                           {generatingFeedbackId === r.id ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />}
                                           Regenerate
@@ -679,7 +679,7 @@ export default function AdminPage() {
               </div>
 
               {filteredReferrals.length === 0 && (
-                <p className="text-center text-sm text-slate-400 py-12">
+                <p className="text-center text-sm text-[#86868b] py-12">
                   {referrals.length === 0 ? 'No referral requests yet.' : 'No results match your filters.'}
                 </p>
               )}
@@ -690,27 +690,27 @@ export default function AdminPage() {
           {tab === 'jobs' && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Manage Jobs</h2>
-                <button onClick={() => { resetJobForm(); setShowJobForm(true); }} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors">
-                  <Plus size={16} /> Add Job
+                <h2 className="text-xl font-semibold text-[#f5f5f7] tracking-tight">Manage Jobs</h2>
+                <button onClick={() => { resetJobForm(); setShowJobForm(true); }} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-[#000000] bg-[#30d158] hover:bg-[#30d158]/90 transition-colors">
+                  <Plus size={14} /> Add Job
                 </button>
               </div>
 
               {showJobForm && (
-                <div className="glass-card rounded-2xl p-6 mb-6 relative">
-                  <button onClick={resetJobForm} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600" aria-label="Close form"><X size={18} /></button>
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-4">{editingJobId ? 'Edit Job' : 'New Job'}</h3>
+                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 mb-6 relative">
+                  <button onClick={resetJobForm} className="absolute top-4 right-4 text-[#86868b] hover:text-[#f5f5f7]" aria-label="Close form"><X size={18} /></button>
+                  <h3 className="font-semibold text-[#f5f5f7] mb-4">{editingJobId ? 'Edit Job' : 'New Job'}</h3>
 
                   {/* AI Job Extraction Section */}
-                  <div className="mb-6 pb-4 border-b border-slate-200 dark:border-white/10">
+                  <div className="mb-6 pb-4 border-b border-white/10">
                     <div className="flex items-center gap-2 mb-2">
-                      <Sparkles size={14} className="text-brand-500" />
-                      <span className="text-sm font-medium text-slate-900 dark:text-white">AI Job Extraction</span>
+                      <Sparkles size={14} className="text-[#0071e3]" />
+                      <span className="text-sm font-medium text-[#f5f5f7]">AI Job Extraction</span>
                       {extractionResult && (
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          (extractionResult as Record<string, unknown>).confidence === 'high' ? 'bg-emerald-500/10 text-emerald-600' :
-                          (extractionResult as Record<string, unknown>).confidence === 'medium' ? 'bg-amber-500/10 text-amber-600' :
-                          'bg-red-500/10 text-red-500'
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                          (extractionResult as Record<string, unknown>).confidence === 'high' ? 'bg-[#30d158]/10 text-[#30d158]' :
+                          (extractionResult as Record<string, unknown>).confidence === 'medium' ? 'bg-[#ff9f0a]/10 text-[#ff9f0a]' :
+                          'bg-[#ff453a]/10 text-[#ff453a]'
                         }`}>
                           {(extractionResult as Record<string, unknown>).confidence as string} confidence
                         </span>
@@ -726,11 +726,11 @@ export default function AdminPage() {
                       className={`${inputCls} resize-none w-full mb-2`}
                     />
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-slate-400">{rawJdText.length}/10,000 chars</span>
+                      <span className="text-[10px] text-[#86868b]">{rawJdText.length}/10,000 chars</span>
                       <button
                         onClick={handleExtractJob}
                         disabled={extracting || !rawJdText.trim()}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-[#0071e3] hover:bg-[#0071e3]/90 transition-colors disabled:opacity-50"
                       >
                         {extracting ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                         Extract with AI
@@ -739,7 +739,7 @@ export default function AdminPage() {
                     {extractionWarnings.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1">
                         {extractionWarnings.map((w, i) => (
-                          <span key={i} className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-600">
+                          <span key={i} className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-[#ff9f0a]/10 text-[#ff9f0a]">
                             <AlertTriangle size={10} /> {w}
                           </span>
                         ))}
@@ -756,47 +756,57 @@ export default function AdminPage() {
                     <input type="number" value={jobForm.experience_min} onChange={(e) => setJobForm({ ...jobForm, experience_min: e.target.value })} placeholder="Min YOE" className={inputCls} />
                     <input type="number" value={jobForm.experience_max} onChange={(e) => setJobForm({ ...jobForm, experience_max: e.target.value })} placeholder="Max YOE" className={inputCls} />
                     <select value={jobForm.location_type} onChange={(e) => setJobForm({ ...jobForm, location_type: e.target.value })} className={inputCls}>
-                      <option value="Remote">Remote</option><option value="Hybrid">Hybrid</option><option value="On-site">On-site</option>
+                      <option value="Remote" className="bg-[#1d1d1f] text-[#f5f5f7]">Remote</option>
+                      <option value="Hybrid" className="bg-[#1d1d1f] text-[#f5f5f7]">Hybrid</option>
+                      <option value="On-site" className="bg-[#1d1d1f] text-[#f5f5f7]">On-site</option>
                     </select>
                     <select value={jobForm.employment_type} onChange={(e) => setJobForm({ ...jobForm, employment_type: e.target.value })} className={inputCls}>
-                      <option value="Full-time">Full-time</option><option value="Contract">Contract</option><option value="Internship">Internship</option>
+                      <option value="Full-time" className="bg-[#1d1d1f] text-[#f5f5f7]">Full-time</option>
+                      <option value="Contract" className="bg-[#1d1d1f] text-[#f5f5f7]">Contract</option>
+                      <option value="Internship" className="bg-[#1d1d1f] text-[#f5f5f7]">Internship</option>
                     </select>
                     <input type="date" value={jobForm.apply_by} onChange={(e) => setJobForm({ ...jobForm, apply_by: e.target.value })} className={inputCls} />
-                    <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                      <input type="checkbox" checked={jobForm.is_active} onChange={(e) => setJobForm({ ...jobForm, is_active: e.target.checked })} className="w-4 h-4 rounded" /> Active
+                    <label className="flex items-center gap-2 text-sm text-[#a1a1a6] cursor-pointer">
+                      <input type="checkbox" checked={jobForm.is_active} onChange={(e) => setJobForm({ ...jobForm, is_active: e.target.checked })} className="w-4 h-4 rounded bg-white/[0.04] border-white/10" /> Active
                     </label>
                     <textarea value={jobForm.description} onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })} placeholder="Description" rows={3} className={`${inputCls} resize-none sm:col-span-2`} />
                   </div>
                   <div className="mt-4 flex gap-3">
-                    <button onClick={handleSaveJob} className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 transition-colors">{editingJobId ? 'Update' : 'Create'}</button>
-                    <button onClick={resetJobForm} className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                    <button onClick={handleSaveJob} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0071e3] hover:bg-[#0071e3]/90 transition-colors">{editingJobId ? 'Update' : 'Create'}</button>
+                    <button onClick={resetJobForm} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-[#86868b] hover:bg-white/[0.04] hover:text-[#f5f5f7] transition-colors">Cancel</button>
                   </div>
                 </div>
               )}
 
               <div className="space-y-3">
-                {jobs.map((job) => (
-                  <div key={job.id} className={`glass-card rounded-xl p-4 flex items-center justify-between gap-4 ${!job.is_active ? 'opacity-50' : ''}`}>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-slate-900 dark:text-white text-sm truncate">{job.title}</h4>
-                        {!job.is_active && <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-500">Inactive</span>}
-                        {job.ai_extracted_json && <span className="text-[10px] px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-600 dark:text-brand-400">AI</span>}
+                {jobs.map((job) => {
+                  const isExpired = job.apply_by && new Date(job.apply_by) < new Date();
+                  const isVisuallyInactive = !job.is_active || isExpired;
+                  return (
+                    <div key={job.id} className={`bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 flex items-center justify-between gap-4 transition-all ${isVisuallyInactive ? 'opacity-50' : ''}`}>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-[#f5f5f7] text-sm truncate">{job.title}</h4>
+                          {!job.is_active && <span className="text-xs px-2 py-0.5 rounded-full bg-[#ff453a]/10 text-[#ff453a]">Inactive</span>}
+                          {isExpired && <span className="text-xs px-2 py-0.5 rounded-full bg-[#ff9f0a]/10 text-[#ff9f0a]">Expired</span>}
+                          {job.ai_extracted_json && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#0071e3]/10 text-[#2997ff]">AI</span>}
+                        </div>
+                        <p className="text-xs text-[#86868b] mt-0.5">
+                          {job.company}
+                          {job.job_location && ` · ${job.job_location}`}
+                          {job.job_id && ` · ID: ${job.job_id}`}
+                          {' · '}{job.location_type} · {job.employment_type} · {job.experience_min}–{job.experience_max} yrs
+                          {job.apply_by && ` · Apply by: ${new Date(job.apply_by).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
+                        </p>
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      {job.company}
-                      {job.job_location && ` · ${job.job_location}`}
-                      {job.job_id && ` · ID: ${job.job_id}`}
-                      {' · '}{job.location_type} · {job.employment_type} · {job.experience_min}–{job.experience_max} yrs
-                    </p>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button onClick={() => handleEditJob(job)} className="p-2 rounded-lg text-[#86868b] hover:text-[#0071e3] hover:bg-[#0071e3]/10 transition-all" aria-label="Edit job"><Edit3 size={14} /></button>
+                        <button onClick={() => handleDeleteJob(job.id)} className="p-2 rounded-lg text-[#86868b] hover:text-[#ff453a] hover:bg-[#ff453a]/10 transition-all" aria-label="Delete job"><Trash2 size={14} /></button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button onClick={() => handleEditJob(job)} className="p-2 rounded-lg text-slate-400 hover:text-brand-500 hover:bg-brand-500/10 transition-all" aria-label="Edit job"><Edit3 size={14} /></button>
-                      <button onClick={() => handleDeleteJob(job.id)} className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all" aria-label="Delete job"><Trash2 size={14} /></button>
-                    </div>
-                  </div>
-                ))}
-                {jobs.length === 0 && <p className="text-center text-sm text-slate-400 py-8">No jobs yet. Create one above.</p>}
+                  );
+                })}
+                {jobs.length === 0 && <p className="text-center text-sm text-[#86868b] py-8">No jobs yet. Create one above.</p>}
               </div>
             </div>
           )}
@@ -810,29 +820,29 @@ export default function AdminPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4"
             onClick={() => setConfirmAction(null)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="glass-card rounded-2xl p-6 max-w-sm w-full"
+              className="bg-[#1d1d1f] border border-white/[0.08] rounded-2xl p-6 max-w-sm w-full shadow-apple-lg"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Confirm Action</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-300 mb-6">
+              <h3 className="text-lg font-bold text-[#f5f5f7] mb-2 tracking-tight">Confirm Action</h3>
+              <p className="text-sm text-[#a1a1a6] mb-6">
                 <strong>{confirmAction.label}</strong> — this will permanently delete this referral entry. This cannot be undone.
               </p>
               <div className="flex items-center gap-3 justify-end">
-                <button onClick={() => setConfirmAction(null)} className="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                <button onClick={() => setConfirmAction(null)} className="px-4 py-2 rounded-xl text-sm font-semibold text-[#86868b] hover:bg-white/[0.04] hover:text-[#f5f5f7] transition-colors">
                   Cancel
                 </button>
                 <button
                   onClick={() => handleDeleteReferral(confirmAction.id)}
-                  className={`inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium text-white transition-colors ${confirmAction.label.includes('Yes') ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-red-500 hover:bg-red-600'}`}
+                  className={`inline-flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-colors ${confirmAction.label.includes('Yes') ? 'bg-[#30d158] hover:bg-[#30d158]/90 text-black' : 'bg-[#ff453a] hover:bg-[#ff453a]/90'}`}
                 >
-                  {deletingId === confirmAction.id && <Loader2 size={14} className="animate-spin" />}
+                  {deletingId === confirmAction.id && <Loader2 size={12} className="animate-spin" />}
                   Delete Entry
                 </button>
               </div>

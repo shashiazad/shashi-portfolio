@@ -12,6 +12,13 @@ interface JobsListProps {
 
 const DESC_CHAR_LIMIT = 150;
 
+const cardStyles = [
+  'apple-card-blue',
+  'apple-card-purple',
+  'apple-card-teal',
+  'apple-card',
+];
+
 export default function JobsList({ onJobClick }: JobsListProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +35,17 @@ export default function JobsList({ onJobClick }: JobsListProps) {
       .order('posted_at', { ascending: false });
 
     if (!error && data) {
-      setJobs(data as Job[]);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const activeJobs = (data as Job[]).filter((job) => {
+        if (!job.apply_by) return true;
+        const applyByDate = new Date(job.apply_by);
+        applyByDate.setHours(0, 0, 0, 0);
+        return applyByDate >= today;
+      });
+
+      setJobs(activeJobs);
     }
     setLoading(false);
   }, [supabase]);
@@ -96,25 +113,25 @@ export default function JobsList({ onJobClick }: JobsListProps) {
   if (loading) {
     return (
       <div className="text-center py-16">
-        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-sm text-slate-500 dark:text-slate-400">Loading positions...</p>
+        <Loader2 size={32} className="animate-spin text-[#0071e3] mx-auto mb-4" />
+        <p className="text-sm text-[#86868b]">Loading positions...</p>
       </div>
     );
   }
 
   if (jobs.length === 0) {
     return (
-      <div className="text-center py-16">
-        <Briefcase size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+      <div className="text-center py-16 bg-[#1d1d1f] border border-white/[0.06] rounded-2xl p-8 max-w-md mx-auto shadow-apple-lg">
+        <Briefcase size={40} className="mx-auto text-[#86868b] mb-4" />
+        <h3 className="text-lg font-semibold text-[#f5f5f7] mb-2 tracking-tight">
           No Open Positions Right Now
         </h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-          Check back soon! You can still submit a referral request using the form above with a job URL or description.
+        <p className="text-sm text-[#86868b] leading-relaxed mb-6">
+          Check back soon! You can still submit a referral request using the form above with any external job URL.
         </p>
         <button
           onClick={fetchJobs}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-all"
+          className="apple-btn text-xs px-5 py-2.5"
         >
           Refresh
         </button>
@@ -125,12 +142,12 @@ export default function JobsList({ onJobClick }: JobsListProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-[#86868b] font-medium">
           {jobs.length} position{jobs.length !== 1 ? 's' : ''} available
         </p>
         <button
           onClick={fetchJobs}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] hover:underline"
         >
           <Loader2 size={12} className={loading ? 'animate-spin' : 'hidden'} />
           Refresh
@@ -141,6 +158,8 @@ export default function JobsList({ onJobClick }: JobsListProps) {
         {jobs.map((job, i) => {
           const isLong = (job.description?.length ?? 0) > DESC_CHAR_LIMIT;
           const expanded = expandedDescs.has(job.id);
+          const cardStyle = cardStyles[i % cardStyles.length];
+
           return (
             <motion.article
               key={job.id}
@@ -148,7 +167,7 @@ export default function JobsList({ onJobClick }: JobsListProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.06 }}
-              className="group glass-card rounded-2xl p-6 flex flex-col h-full glow-on-hover"
+              className={`group p-8 rounded-3xl flex flex-col h-full border ${cardStyle} transition-all duration-300`}
             >
               {/* Header — clickable to fill referral form */}
               <div
@@ -166,14 +185,14 @@ export default function JobsList({ onJobClick }: JobsListProps) {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-semibold text-lg text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors leading-snug">
+                    <h3 className="font-semibold text-[18px] text-[#f5f5f7] group-hover:text-[#2997ff] transition-colors leading-snug tracking-tight">
                       {job.title}
                     </h3>
-                    <p className="text-sm text-brand-600 dark:text-brand-400 font-medium mt-0.5">
+                    <p className="text-sm text-[#2997ff] font-medium mt-0.5">
                       {job.company}
                     </p>
                   </div>
-                  <div className="p-2 rounded-lg text-slate-400 group-hover:text-brand-500 group-hover:bg-brand-500/10 transition-all shrink-0">
+                  <div className="p-2 rounded-lg text-white/50 group-hover:text-[#2997ff] group-hover:bg-[#2997ff]/10 transition-all shrink-0">
                     <ArrowUpRight size={18} />
                   </div>
                 </div>
@@ -182,20 +201,27 @@ export default function JobsList({ onJobClick }: JobsListProps) {
               {/* Description with Show more / less */}
               {job.description && (
                 <div className="mt-3">
-                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                  <p className="text-[14px] text-[#a1a1a6] leading-relaxed whitespace-pre-line">
                     {expanded || !isLong
                       ? job.description
                       : `${job.description.slice(0, DESC_CHAR_LIMIT)}…`}
                   </p>
                   {isLong && (
                     <button
-                      onClick={(e) => { e.stopPropagation(); toggleDesc(job.id); }}
-                      className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDesc(job.id);
+                      }}
+                      className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#2997ff] hover:underline"
                     >
                       {expanded ? (
-                        <><ChevronUp size={12} /> Show less</>
+                        <>
+                          <ChevronUp size={12} /> Show less
+                        </>
                       ) : (
-                        <><ChevronDown size={12} /> Show more</>
+                        <>
+                          <ChevronDown size={12} /> Show more
+                        </>
                       )}
                     </button>
                   )}
@@ -203,10 +229,10 @@ export default function JobsList({ onJobClick }: JobsListProps) {
               )}
 
               {/* Meta */}
-              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-[#86868b] font-medium">
                 {job.job_location && (
                   <span className="inline-flex items-center gap-1">
-                    <MapPin size={12} />
+                    <MapPin size={12} className="text-[#2997ff]/70" />
                     {job.job_location}
                   </span>
                 )}
@@ -216,16 +242,16 @@ export default function JobsList({ onJobClick }: JobsListProps) {
                   </span>
                 )}
                 <span className="inline-flex items-center gap-1">
-                  <Briefcase size={12} />
+                  <Briefcase size={12} className="text-[#2997ff]/70" />
                   {job.employment_type}
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Clock size={12} />
+                  <Clock size={12} className="text-[#2997ff]/70" />
                   {job.experience_min}–{job.experience_max} yrs
                 </span>
                 {!job.job_location && (
                   <span className="inline-flex items-center gap-1">
-                    <MapPin size={12} />
+                    <MapPin size={12} className="text-[#2997ff]/70" />
                     {job.location_type}
                   </span>
                 )}
@@ -233,13 +259,13 @@ export default function JobsList({ onJobClick }: JobsListProps) {
 
               {/* Tech Stack */}
               {job.tech_stack && job.tech_stack.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-1.5 pt-3 border-t border-slate-200/50 dark:border-white/5">
+                <div className="mt-4 flex flex-wrap gap-1.5 pt-3.5 border-t border-white/[0.06]">
                   {job.tech_stack.map((tech) => (
                     <span
                       key={tech}
-                      className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md font-medium bg-brand-500/5 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 border border-brand-200/50 dark:border-brand-500/20"
+                      className="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-md font-medium bg-white/[0.08] text-[#f5f5f7] border border-white/[0.1]"
                     >
-                      <Code2 size={10} />
+                      <Code2 size={10} className="text-[#2997ff]/80" />
                       {tech}
                     </span>
                   ))}
@@ -247,10 +273,10 @@ export default function JobsList({ onJobClick }: JobsListProps) {
               )}
 
               {/* Footer */}
-              <div className="mt-auto pt-3 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+              <div className="mt-auto pt-4 flex items-center justify-between text-xs text-[#86868b] border-t border-white/[0.04] mt-5">
                 <span>Posted {formatDate(job.posted_at)}</span>
                 {job.apply_by && (
-                  <span className="text-amber-600 dark:text-amber-400 font-medium">
+                  <span className="text-[#ff9500] font-semibold">
                     Apply by {formatDate(job.apply_by)}
                   </span>
                 )}

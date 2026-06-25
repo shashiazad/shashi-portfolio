@@ -135,6 +135,7 @@ type AuditAction =
   | 'job.created'
   | 'job.updated'
   | 'job.deactivated'
+  | 'job.deleted'
   | 'job.ai_parsed'
   | 'resume.signed_url'
   | 'chat.response'

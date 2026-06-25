@@ -10,6 +10,15 @@ export const dynamic = 'force-dynamic';
 /** GET /api/admin/jobs — List all jobs (including inactive) */
 export async function GET() {
   const supabase = getSupabaseServer();
+
+  // Auto-deactivate expired jobs in database on load
+  const todayStr = new Date().toISOString();
+  await supabase
+    .from('jobs')
+    .update({ is_active: false } as never)
+    .lt('apply_by', todayStr)
+    .eq('is_active', true);
+
   const { data, error } = await supabase
     .from('jobs')
     .select('*')
@@ -98,7 +107,7 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-/** DELETE /api/admin/jobs — Soft-delete a job (pass id in body) */
+/** DELETE /api/admin/jobs — Delete a job post permanently */
 export async function DELETE(req: NextRequest) {
   try {
     const body = await req.json();
@@ -110,14 +119,14 @@ export async function DELETE(req: NextRequest) {
     const supabase = getSupabaseServer();
     const { error } = await supabase
       .from('jobs')
-      .update({ is_active: false } as never)
+      .delete()
       .eq('id', id);
 
     if (error) {
       return apiError(error.message, 500);
     }
-    audit('job.deactivated', { jobId: id });
-    return apiSuccess({ deactivated: true });
+    audit('job.deleted', { jobId: id });
+    return apiSuccess({ deleted: true });
   } catch {
     return apiError('Invalid request body', 400);
   }

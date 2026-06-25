@@ -78,6 +78,13 @@ Combining advanced academic training in Computer Science & Engineering with hand
 
   projects: [
     {
+      name: 'SpendClan',
+      summary: 'Secure, full-stack finance web application designed to bridge the gap between individual budget tracking and group expense management. Implemented a greedy transaction matching algorithm that automatically computes the minimum number of transfers required to settle all debts in a group. Developed double-gated password recovery paths (email token + Q&A fallback), session-level data isolation, and composite database indexing on PostgreSQL via Prisma to guarantee high-performance scaling.',
+      stack: ['Next.js', 'React', 'Tailwind CSS', 'Prisma', 'PostgreSQL', 'NextAuth.js', 'Nodemailer'],
+      link: '#',
+      year: 'Jun 2026',
+    },
+    {
       name: 'AEGIS AI (Automated Enforcement & Guarding of Infrastructure Security)',
       summary: 'Built an agentic AI-driven compliance platform to enforce DISA STIG hardening with continuous verification instead of one-time script execution. Designed a generative compliance engine that combines vendor artifacts with AI-generated, platform-specific remediation logic to close coverage gaps across hypervisor, OS, middleware, and application layers. Implemented verify-by-rescan validation, drift detection workflows, and automated evidence generation to improve audit readiness and reduce manual compliance effort.',
       stack: ['Python', 'Streamlit', 'LangChain/LangGraph-style Agentic Workflow', 'Paramiko', 'pyVmomi', 'LLM (Gemini/GPT via connector)', 'GitHub Actions'],
@@ -90,13 +97,6 @@ Combining advanced academic training in Computer Science & Engineering with hand
       stack: ['Python', 'LangGraph', 'LangChain', 'Google Gemini API', 'GitHub Actions'],
       link: 'https://github.com/shashiazad/ai-pr-reviewer',
       year: 'Jan 2026',
-    },
-    {
-      name: 'SpendClan',
-      summary: 'Secure, full-stack finance web application designed to bridge the gap between individual budget tracking and group expense management. Implemented a greedy transaction matching algorithm that automatically computes the minimum number of transfers required to settle all debts in a group. Developed double-gated password recovery paths (email token + Q&A fallback), session-level data isolation, and composite database indexing on PostgreSQL via Prisma to guarantee high-performance scaling.',
-      stack: ['Next.js', 'React', 'Tailwind CSS', 'Prisma', 'PostgreSQL', 'NextAuth.js', 'Nodemailer'],
-      link: '#',
-      year: 'Dec 2025',
     },
     {
       name: 'TeleMock – Secure Telemetry Pipeline Simulator',
