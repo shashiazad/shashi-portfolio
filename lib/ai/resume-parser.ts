@@ -17,13 +17,19 @@ export async function extractTextFromPdf(
   maxChars: number = DEFAULT_MAX_CHARS,
 ): Promise<string> {
   try {
+    // Force Vercel/Next.js to copy/bundle the pdf.worker.js file in production builds
+    // @ts-ignore
+    await import('pdfjs-dist/legacy/build/pdf.worker.js');
+
     // Dynamic import to avoid issues with server-side module resolution
     const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.js');
 
-    // Disable worker for server-side usage — the fake worker setup fails in
-    // serverless environments because webpack can't resolve pdf.worker.js
     if (pdfjsLib.GlobalWorkerOptions) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = require.resolve('pdfjs-dist/legacy/build/pdf.worker.js');
+      } catch {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+      }
     }
 
     const data = new Uint8Array(buffer);
