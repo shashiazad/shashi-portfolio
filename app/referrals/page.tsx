@@ -7,12 +7,14 @@ import { Toaster } from 'sonner';
 import ReferralForm from '@/components/referrals/ReferralForm';
 import JobsList from '@/components/referrals/JobsList';
 
+import type { Job } from '@/types/referral';
+
 export default function ReferralsPage() {
-  const [prefillJobRef, setPrefillJobRef] = useState<string | null>(null);
+  const [prefillJob, setPrefillJob] = useState<Job | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
-  const handleJobClick = (_jobId: string, jobRef: string) => {
-    setPrefillJobRef(jobRef);
+  const handleJobClick = (job: Job) => {
+    setPrefillJob(job);
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
@@ -62,7 +64,7 @@ export default function ReferralsPage() {
             <div className="apple-divider mb-8" />
 
             <ReferralForm
-              prefillJobRef={prefillJobRef}
+              prefillJob={prefillJob}
               formRef={formRef}
             />
           </section>

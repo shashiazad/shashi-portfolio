@@ -70,7 +70,8 @@ export const jobSchema = z.object({
   apply_by: z.string().nullable().optional(),
   is_active: z.boolean().default(true),
   job_location: z.string().optional(),
-  job_id: z.string().optional(),
+  job_id: z.string().min(1, 'Job ID is required'),
+  job_link: z.string().url('Please enter a valid URL').optional().or(z.literal('')).nullable(),
 });
 
 export type JobFormData = z.infer<typeof jobSchema>;

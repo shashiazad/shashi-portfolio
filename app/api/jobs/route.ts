@@ -17,7 +17,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from('jobs')
-      .select('id, title, company, description, tech_stack, experience_min, experience_max, location_type, employment_type, posted_at, apply_by')
+      .select('id, title, company, description, tech_stack, experience_min, experience_max, location_type, employment_type, posted_at, apply_by, job_location, job_id, job_link')
       .eq('is_active', true)
       .order('posted_at', { ascending: false });
 

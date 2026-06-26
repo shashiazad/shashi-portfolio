@@ -7,7 +7,7 @@ import { getSupabaseBrowser } from '@/lib/supabase/client';
 import type { Job } from '@/types/referral';
 
 interface JobsListProps {
-  onJobClick: (jobId: string, jobRef: string) => void;
+  onJobClick: (job: Job) => void;
 }
 
 const DESC_CHAR_LIMIT = 150;
@@ -30,7 +30,7 @@ export default function JobsList({ onJobClick }: JobsListProps) {
     setLoading(true);
     const { data, error } = await supabase
       .from('jobs')
-      .select('id, title, company, description, tech_stack, experience_min, experience_max, location_type, employment_type, posted_at, apply_by, is_active, job_location, job_id')
+      .select('id, title, company, description, tech_stack, experience_min, experience_max, location_type, employment_type, posted_at, apply_by, is_active, job_location, job_id, job_link')
       .eq('is_active', true)
       .order('posted_at', { ascending: false });
 
@@ -172,13 +172,13 @@ export default function JobsList({ onJobClick }: JobsListProps) {
               {/* Header — clickable to fill referral form */}
               <div
                 className="cursor-pointer"
-                onClick={() => onJobClick(job.id, `${job.title} — ${job.company}`)}
+                onClick={() => onJobClick(job)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    onJobClick(job.id, `${job.title} — ${job.company}`);
+                    onJobClick(job);
                   }
                 }}
                 aria-label={`Apply for ${job.title} at ${job.company}. Click to fill referral form.`}
@@ -271,6 +271,27 @@ export default function JobsList({ onJobClick }: JobsListProps) {
                   ))}
                 </div>
               )}
+
+              {/* Action Buttons */}
+              <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center gap-3">
+                {job.job_link && (
+                  <a
+                    href={job.job_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold bg-white/[0.08] border border-white/10 text-[#f5f5f7] hover:bg-white/[0.15] transition-all duration-200"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Apply Now ↗
+                  </a>
+                )}
+                <button
+                  onClick={() => onJobClick(job)}
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold bg-[#0071e3] hover:bg-[#0077ed] text-white transition-all duration-200 ml-auto"
+                >
+                  Request Referral
+                </button>
+              </div>
 
               {/* Footer */}
               <div className="mt-auto pt-4 flex items-center justify-between text-xs text-[#86868b] border-t border-white/[0.04] mt-5">

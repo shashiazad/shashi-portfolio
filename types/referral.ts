@@ -73,6 +73,7 @@ export interface Job {
   is_active?: boolean;
   job_location?: string;
   job_id?: string;
+  job_link?: string | null;
   raw_jd?: string | null;
   ai_extracted_json?: AiExtractedJob | null;
 }

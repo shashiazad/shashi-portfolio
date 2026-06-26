@@ -4,9 +4,10 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Upload, X, CheckCircle2, AlertCircle, Loader2, FileText } from 'lucide-react';
 import { referralFormSchema } from '@/lib/validations/referral';
+import type { Job } from '@/types/referral';
 
 interface ReferralFormProps {
-  prefillJobRef?: string | null;
+  prefillJob?: Job | null;
   formRef?: React.Ref<HTMLDivElement>;
 }
 
@@ -17,7 +18,7 @@ interface FieldErrors {
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_EXTENSIONS = ['.pdf', '.doc', '.docx'];
 
-export default function ReferralForm({ prefillJobRef, formRef }: ReferralFormProps) {
+export default function ReferralForm({ prefillJob, formRef }: ReferralFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState('');
@@ -25,15 +26,21 @@ export default function ReferralForm({ prefillJobRef, formRef }: ReferralFormPro
   const [techInput, setTechInput] = useState('');
   const [techStacks, setTechStacks] = useState<string[]>([]);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [jobIdWithCompany, setJobIdWithCompany] = useState(prefillJobRef || '');
+  const [jobIdWithCompany, setJobIdWithCompany] = useState(
+    prefillJob?.job_id ? `${prefillJob.job_id} — ${prefillJob.company}` : (prefillJob?.company || '')
+  );
+  const [jobLink, setJobLink] = useState(prefillJob?.job_link || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Update job_id_with_company when a job card is clicked
+  // Update job details when a job card is clicked
   useEffect(() => {
-    if (prefillJobRef) {
-      setJobIdWithCompany(prefillJobRef);
+    if (prefillJob) {
+      setJobIdWithCompany(
+        prefillJob.job_id ? `${prefillJob.job_id} — ${prefillJob.company}` : `${prefillJob.company}`
+      );
+      setJobLink(prefillJob.job_link || '');
     }
-  }, [prefillJobRef]);
+  }, [prefillJob]);
 
   const validateField = useCallback(
     (name: string, value: unknown): string | null => {
@@ -181,6 +188,7 @@ export default function ReferralForm({ prefillJobRef, formRef }: ReferralFormPro
       setTechStacks([]);
       setResumeFile(null);
       setJobIdWithCompany('');
+      setJobLink('');
       setTechInput('');
     } catch {
       setServerError('Network error. Please check your connection and try again.');
@@ -425,6 +433,8 @@ export default function ReferralForm({ prefillJobRef, formRef }: ReferralFormPro
               id="ref-joblink"
               name="job_link"
               type="url"
+              value={jobLink}
+              onChange={(e) => setJobLink(e.target.value)}
               className={`w-full rounded-xl px-4 py-3 bg-white/[0.04] border ${
                 fieldErrors.job_link ? 'border-red-500/50' : 'border-white/10'
               } text-[#f5f5f7] placeholder-[#424245] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 outline-none transition-all text-[15px]`}

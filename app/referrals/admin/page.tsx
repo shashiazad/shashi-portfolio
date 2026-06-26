@@ -21,7 +21,7 @@ export default function AdminPage() {
     title: '', company: '', description: '', tech_stack: '',
     experience_min: '0', experience_max: '0', location_type: 'Remote',
     employment_type: 'Full-time', apply_by: '', is_active: true,
-    job_location: '', job_id: '',
+    job_location: '', job_id: '', job_link: '',
   });
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
   const [showJobForm, setShowJobForm] = useState(false);
@@ -106,6 +106,7 @@ export default function AdminPage() {
       apply_by: jobForm.apply_by || null, is_active: jobForm.is_active,
       job_location: jobForm.job_location || null,
       job_id: jobForm.job_id || null,
+      job_link: jobForm.job_link || null,
     };
 
     // Include AI data if extraction was used
@@ -134,6 +135,7 @@ export default function AdminPage() {
       apply_by: job.apply_by?.slice(0, 10) || '', is_active: job.is_active !== false,
       job_location: job.job_location || '',
       job_id: job.job_id || '',
+      job_link: job.job_link || '',
     });
     setRawJdText(job.raw_jd || '');
     setExtractionResult(job.ai_extracted_json as Record<string, unknown> | null);
@@ -143,7 +145,7 @@ export default function AdminPage() {
 
   const resetJobForm = () => {
     setEditingJobId(null); setShowJobForm(false);
-    setJobForm({ title: '', company: '', description: '', tech_stack: '', experience_min: '0', experience_max: '0', location_type: 'Remote', employment_type: 'Full-time', apply_by: '', is_active: true, job_location: '', job_id: '' });
+    setJobForm({ title: '', company: '', description: '', tech_stack: '', experience_min: '0', experience_max: '0', location_type: 'Remote', employment_type: 'Full-time', apply_by: '', is_active: true, job_location: '', job_id: '', job_link: '' });
     setRawJdText(''); setExtractionResult(null); setExtractionWarnings([]);
   };
 
@@ -750,8 +752,9 @@ export default function AdminPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <input value={jobForm.title} onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })} placeholder="Job Title *" className={inputCls} />
                     <input value={jobForm.company} onChange={(e) => setJobForm({ ...jobForm, company: e.target.value })} placeholder="Company *" className={inputCls} />
-                    <input value={jobForm.job_id} onChange={(e) => setJobForm({ ...jobForm, job_id: e.target.value })} placeholder="Job ID" className={inputCls} />
+                    <input value={jobForm.job_id} onChange={(e) => setJobForm({ ...jobForm, job_id: e.target.value })} placeholder="Job ID *" className={inputCls} />
                     <input value={jobForm.job_location} onChange={(e) => setJobForm({ ...jobForm, job_location: e.target.value })} placeholder="Job Location" className={inputCls} />
+                    <input value={jobForm.job_link} onChange={(e) => setJobForm({ ...jobForm, job_link: e.target.value })} placeholder="Job Link (URL)" className={`${inputCls} sm:col-span-2`} />
                     <input value={jobForm.tech_stack} onChange={(e) => setJobForm({ ...jobForm, tech_stack: e.target.value })} placeholder="Tech stack (comma-separated)" className={`${inputCls} sm:col-span-2`} />
                     <input type="number" value={jobForm.experience_min} onChange={(e) => setJobForm({ ...jobForm, experience_min: e.target.value })} placeholder="Min YOE" className={inputCls} />
                     <input type="number" value={jobForm.experience_max} onChange={(e) => setJobForm({ ...jobForm, experience_max: e.target.value })} placeholder="Max YOE" className={inputCls} />

@@ -21,7 +21,8 @@ create table if not exists public.jobs (
   apply_by        timestamptz,
   is_active       boolean not null default true,
   job_location    text,
-  job_id          text
+  job_id          text,
+  job_link        text
 );
 
 -- 3. Referral requests table
