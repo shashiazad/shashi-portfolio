@@ -5,7 +5,7 @@ export const profile = {
   company_logo: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Dell_Technologies_logo.svg',
   photo: '/profile.jpg',
 
-  summary: `Software Development Engineer with experience building backend microservices using Java, Spring Boot, and Go. Skilled in designing RESTful APIs, deploying containerized applications with Docker and Kubernetes, and working within Agile teams. Exposure to Generative AI, Agentic AI, and prompt engineering. Strong foundation in Data Structures and Algorithms and Operating Systems.`,
+  summary: `Backend and Infrastructure Engineer with hands on experience building cloud-native microservices and REST APIs in private cloud environments. Skilled in Go, Python, Kubernetes, and system design for a scalable and reliable backend system.`,
 
   education: [
     {
@@ -26,18 +26,18 @@ export const profile = {
     }
   ],
 
-  bio: `Software engineer with expertise in cloud-native architectures, microservices development, and automation. Skilled in building scalable backend systems using Java, Spring Boot, and Go, with a strong focus on secure communication, API design, and workflow optimization through scripting.
+  bio: `Software engineer with expertise in cloud-native architectures, microservices development, and automation. Skilled in building scalable backend systems using Go, python, Java and Spring Boot, with a strong focus on secure communication, API design, and workflow optimization through scripting.
 
 Proficient in developing REST APIs, implementing system validation checks, and creating solutions that enhance reliability and reduce deployment risks. Experienced in designing reusable processes and documentation to improve efficiency and streamline complex operations.
 
 Combining advanced academic training in Computer Science & Engineering with hands-on experience, the focus is on delivering secure, scalable, and future-ready solutions that simplify infrastructure and drive operational excellence.`,
 
   skills: {
-    languages: ['Java', 'Go', 'Python', 'C/C++'],
+    languages: ['Go', 'Python', 'Java', 'C/C++'],
     backend: ['Spring Boot', 'RESTful APIs', 'Microservices Architecture'],
     frontend: ['React.js', 'Streamlit', 'HTML/CSS'],
-    databases: ['MySQL', 'SQL Server', 'Oracle', 'H2'],
-    devops: ['Docker', 'Kubernetes', 'Linux', 'Shell Scripting', 'Git', 'GitHub', 'NGINX', 'Postman', 'Agile'],
+    databases: ['MySQL', 'SQL Server', 'Oracle', 'PostgreSQL'],
+    devops: ['Docker', 'Kubernetes', 'Linux', 'Shell Scripting', 'Git', 'GitHub', 'NGINX', 'Postman'],
     ai: ['Generative AI', 'Agentic AI', 'Prompt Engineering', 'Machine Learning'],
     core: ['Data Structures & Algorithms', 'DBMS', 'Operating Systems', 'Computer Networks'],
   },
@@ -49,9 +49,9 @@ Combining advanced academic training in Computer Science & Engineering with hand
       period: 'Jul 2025 – Present',
       location: 'Bangalore, Karnataka',
       bullets: [
-        'Engineered end-to-end Nutanix cluster deployment workflows for Dell Private Cloud (DPC) using Go and Python microservices, achieving stable production rollouts across multiple release cycles.',
-        'Built multiple RESTful APIs for infrastructure validation, configuration retrieval, and cluster provisioning, reducing manual checks and strengthening backend automation.',
-        'Developed automated deployment prechecks and validation modules to verify cluster readiness, reducing deployment failures and rollback incidents.',
+        'Engineered 8+ backend microservices using Go, handling configuration, discovery, and validation for Nutanix cluster deployments in a private cloud environment.',
+        'Developed a Python validation framework with 10+ modules, ensuring safe Day-2 lifecycle operations and preventing cluster-level failures.',
+        'Improved deployment reliability by implementing automated prechecks and contributing ~12.5% test coverage for upgrade workflows.',
       ]
     },
     {
@@ -71,7 +71,7 @@ Combining advanced academic training in Computer Science & Engineering with hand
       location: 'Noida, Uttar Pradesh',
       bullets: [
         'Developed business logic and UI components for Dynamics 365 ERP using OOP principles, reducing data entry errors by 40%.',
-        'Optimized SQL queries and stored procedures in SQL Server, improving database response time by 20%.',
+        'Contributed to CI/CD pipelines using Docker, improving deployment consistency and release efficiency.',
       ]
     }
   ],
@@ -81,7 +81,7 @@ Combining advanced academic training in Computer Science & Engineering with hand
       name: 'SpendClan',
       summary: 'Secure, full-stack finance web application designed to bridge the gap between individual budget tracking and group expense management. Implemented a greedy transaction matching algorithm that automatically computes the minimum number of transfers required to settle all debts in a group. Developed double-gated password recovery paths (email token + Q&A fallback), session-level data isolation, and composite database indexing on PostgreSQL via Prisma to guarantee high-performance scaling.',
       stack: ['Next.js', 'React', 'Tailwind CSS', 'Prisma', 'PostgreSQL', 'NextAuth.js', 'Nodemailer'],
-      link: '#',
+      link: 'https://github.com/shashiazad/spendclan',
       year: 'Jun 2026',
     },
     {
