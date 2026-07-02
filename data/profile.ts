@@ -78,6 +78,21 @@ Combining advanced academic training in Computer Science & Engineering with hand
 
   projects: [
     {
+      name: "Portal for Balmiki Inter College",
+      summary:
+        "Designed and developed the official web portal for Balmiki Inter College as a full-stack application. Built a secure server-side architecture with Node.js and Express.js, implemented PostgreSQL-based student record management, integrated AWS S3 for file storage and document handling, and developed a responsive user interface using EJS and Vite. The platform streamlines academic administration through secure data management, efficient file workflows, and scalable backend services.",
+      stack: [
+        "Node.js",
+        "Express.js",
+        "EJS",
+        "PostgreSQL",
+        "Vite",
+        "AWS S3",
+      ],
+      link: "https://bicbalua.vercel.app",
+      year: "2026",
+    },
+    {
       name: 'SpendClan',
       summary: 'Secure, full-stack finance web application designed to bridge the gap between individual budget tracking and group expense management. Implemented a greedy transaction matching algorithm that automatically computes the minimum number of transfers required to settle all debts in a group. Developed double-gated password recovery paths (email token + Q&A fallback), session-level data isolation, and composite database indexing on PostgreSQL via Prisma to guarantee high-performance scaling.',
       stack: ['Next.js', 'React', 'Tailwind CSS', 'Prisma', 'PostgreSQL', 'NextAuth.js', 'Nodemailer'],
