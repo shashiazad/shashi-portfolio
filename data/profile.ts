@@ -33,13 +33,12 @@ Proficient in developing REST APIs, implementing system validation checks, and c
 Combining advanced academic training in Computer Science & Engineering with hands-on experience, the focus is on delivering secure, scalable, and future-ready solutions that simplify infrastructure and drive operational excellence.`,
 
   skills: {
-    languages: ['Go', 'Python', 'Java', 'C/C++'],
-    backend: ['Spring Boot', 'RESTful APIs', 'Microservices Architecture'],
-    frontend: ['React.js', 'Streamlit', 'HTML/CSS'],
-    databases: ['MySQL', 'SQL Server', 'Oracle', 'PostgreSQL'],
-    devops: ['Docker', 'Kubernetes', 'Linux', 'Shell Scripting', 'Git', 'GitHub', 'NGINX', 'Postman'],
-    ai: ['Generative AI', 'Agentic AI', 'Prompt Engineering', 'Machine Learning'],
-    core: ['Data Structures & Algorithms', 'DBMS', 'Operating Systems', 'Computer Networks'],
+    languages: ['C', 'C++', 'Java', 'Go', 'Python'],
+    ai: ['LangGraph', 'LangChain', 'Multi-Agent AI Systems', 'GenAI Applications', 'LLM Integration'],
+    systems: ['Linux', 'Windows', 'System-Level Debugging', 'Performance Analysis'],
+    tools: ['Git', 'GitHub Actions', 'CMake (Familiar)', 'Shell Scripting', 'CI/CD Pipelines'],
+    backend: ['REST APIs', 'Microservices', 'Distributed Systems', 'Kubernetes', 'Docker', 'NGINX'],
+    databases: ['MySQL', 'SQL Server', 'H2'],
   },
 
   experience: [
@@ -49,9 +48,9 @@ Combining advanced academic training in Computer Science & Engineering with hand
       period: 'Jul 2025 – Present',
       location: 'Bangalore, Karnataka',
       bullets: [
-        'Engineered 8+ backend microservices using Go, handling configuration, discovery, and validation for Nutanix cluster deployments in a private cloud environment.',
-        'Developed a Python validation framework with 10+ modules, ensuring safe Day-2 lifecycle operations and preventing cluster-level failures.',
-        'Improved deployment reliability by implementing automated prechecks and contributing ~12.5% test coverage for upgrade workflows.',
+        'Designed and implemented 10+ Go REST APIs with optimized request handling, validation logic, and debugging support for distributed private-cloud infrastructure.',
+        'Developed a Python validation framework with 8+ modules, ensuring safe node provisioning and lifecycle operations and preventing cluster-level failures.',
+        'Contributed to Kubernetes/Helm deployment pipelines and implemented SSH-based infrastructure integration for VM-level operations.',
       ]
     },
     {

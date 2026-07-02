@@ -31,7 +31,7 @@ About Shashi:
 - Current location: Bangalore, Karnataka
 - Current role: Software Engineer II at Dell Technologies, Bangalore, Karnataka
 - Education: M.Tech in CSE from NIT (Dr BR Ambedkar National Institute of Technology) Jalandhar (CGPA 8.18, 2023–2025), B.Tech in CSE from Kashi Institute of Technology Varanasi (University: Dr A.P.J. Abdul Kalam Technical University, Lucknow)(CGPA 7.78, 2020–2023)
-- Skills: Java, Go, Python, C/C++, Spring Boot, RESTful APIs, Microservices, React.js, Docker, Kubernetes, Linux, Shell Scripting, Git, MySQL, SQL Server, Generative AI, Agentic AI, Prompt Engineering
+- Skills: C, C++, Java, Go, Python, LangGraph, LangChain, Multi-Agent AI Systems, GenAI Applications, LLM Integration, Linux, Windows, System-Level Debugging, Performance Analysis, Git, GitHub Actions, CMake, Shell Scripting, CI/CD Pipelines, REST APIs, Microservices, Distributed Systems, Kubernetes, Docker, NGINX, MySQL, SQL Server, H2
 - Experience:
   * Software Engineer II at Dell Technologies (Jul 2025–Present): Engineered Nutanix cluster deployment workflows for Dell Private Cloud using Java/Spring Boot microservices, built RESTful APIs for infrastructure validation and cluster provisioning, developed automated deployment prechecks.
   * Software Engineer Intern at Dell Technologies (Jul 2024–May 2025): Designed Spring Boot microservices with IAM and mTLS authentication, automated CI/CD with Docker.

@@ -5,16 +5,15 @@ import Section from './Section';
 import { profile } from '@/data/profile';
 
 export default function Skills() {
-  const { languages, backend, frontend, devops, databases, ai, core } = profile.skills;
+  const { languages, ai, systems, tools, backend, databases } = profile.skills;
 
   const categories = [
-    { name: 'Languages', items: languages },
-    { name: 'Backend', items: backend },
-    { name: 'Frontend', items: frontend },
-    { name: 'DevOps & Tools', items: devops },
+    { name: 'Programming Languages', items: languages },
+    { name: 'AI & Orchestration', items: ai },
+    { name: 'Systems & Platforms', items: systems },
+    { name: 'Build Tools & Workflow', items: tools },
+    { name: 'Backend & Infrastructure', items: backend },
     { name: 'Databases', items: databases },
-    { name: 'AI / ML', items: ai },
-    { name: 'Core Concepts', items: core },
   ];
 
   return (

@@ -78,12 +78,11 @@ export default function ResumeSection() {
           <div className="space-y-2 text-[14px]">
             {[
               { label: 'Programming', items: profile.skills.languages },
-              { label: 'Backend', items: profile.skills.backend },
-              { label: 'Frontend', items: profile.skills.frontend },
+              { label: 'AI & Orchestration', items: profile.skills.ai },
+              { label: 'Systems & Platforms', items: profile.skills.systems },
+              { label: 'Build Tools & Workflow', items: profile.skills.tools },
+              { label: 'Backend & Infrastructure', items: profile.skills.backend },
               { label: 'Databases', items: profile.skills.databases },
-              { label: 'DevOps / Tools', items: profile.skills.devops },
-              { label: 'AI / ML', items: profile.skills.ai },
-              { label: 'Core Concepts', items: profile.skills.core },
             ].map(({ label, items }) => (
               <div key={label} className="flex gap-2">
                 <span className="font-semibold shrink-0 w-28 text-[#1d1d1f]">{label}:</span>
