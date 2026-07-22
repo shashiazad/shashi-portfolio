@@ -2,12 +2,19 @@
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, User, Loader2 } from 'lucide-react';
+import { X, Send, User, Loader2, Sparkles, Copy, Check, MessageSquare } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
+
+const SUGGESTION_CHIPS = [
+  "What are Shashi's key skills?",
+  "Tell me about DISA STIG AI project",
+  "How do I request a referral?",
+  "What is Shashi's current role?",
+];
 
 const CHAT_FALLBACK_MESSAGES = [
   'I can\'t respond right now. Please try again shortly.',
@@ -21,19 +28,35 @@ export default function SiyaChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hi! I'm Siya, Shashi's AI assistant. Ask me anything about his skills, experience, or projects. I can also help with job referrals at Dell, Intel, NVIDIA, and Qualcomm!",
+      content: "Hi! I'm Siya, Shashi's personal AI assistant. Ask me anything about his technical skills, background, projects, or job referrals!",
     },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastFallbackIndexRef = useRef(-1);
+
+  // Close on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, loading]);
+
+  const copyToClipboard = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
 
   const renderMessageContent = (content: string) => {
     const linkRegex = /\[([^\]]+)\]\((\/[^)\s]+)\)/g;
@@ -50,7 +73,7 @@ export default function SiyaChat() {
         <a
           key={`link-${match.index}-${href}`}
           href={href}
-          className="underline decoration-[#0071e3]/70 underline-offset-2 hover:text-[#0071e3]"
+          className="underline decoration-[#2997ff] underline-offset-2 hover:text-[#2997ff] font-medium"
         >
           {label}
         </a>
@@ -77,9 +100,8 @@ export default function SiyaChat() {
     return CHAT_FALLBACK_MESSAGES[nextIndex];
   };
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    const text = input.trim();
+  async function sendMessage(textToSend: string) {
+    const text = textToSend.trim();
     if (!text || loading) return;
 
     const userMsg: Message = { role: 'user', content: text };
@@ -121,124 +143,152 @@ export default function SiyaChat() {
     }
   }
 
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    sendMessage(input);
+  }
+
   return (
     <>
-      {/* Siri Orb Toggle Button */}
-      <motion.button
-        onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 siri-orb shadow-apple-lg"
-        style={{ animation: open ? 'none' : 'siriPulse 2s ease-in-out infinite' }}
-        whileTap={{ scale: 0.92 }}
-        aria-label="Chat with Siya"
-      >
-        {open ? (
-          <X size={20} className="text-[#f5f5f7] relative z-10" />
-        ) : (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="relative z-10">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l7 4.5-7 4.5z"
-              fill="#f5f5f7"
-              opacity="0.9"
-            />
-          </svg>
-        )}
-      </motion.button>
+      {/* Siri Orb Floating Toggle Button Container */}
+      <div className="fixed bottom-6 right-6 z-[9999]">
+        <motion.button
+          onClick={() => setOpen(!open)}
+          className="siri-orb shadow-2xl relative"
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
+          aria-label="Chat with Siya AI Assistant"
+        >
+          {open ? (
+            <X size={22} className="text-[#f5f5f7] relative z-10" />
+          ) : (
+            <MessageSquare size={22} className="text-[#f5f5f7] relative z-10" />
+          )}
+        </motion.button>
+      </div>
 
-      {/* Chat Window */}
+      {/* Chat Window Drawer */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-            className="fixed bottom-24 right-4 left-4 sm:left-auto sm:right-6 z-50 sm:w-[380px] rounded-2xl overflow-hidden shadow-apple-lg flex flex-col"
+            exit={{ opacity: 0, y: 16, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+            className="fixed bottom-24 right-4 sm:right-6 z-[9999] w-[calc(100vw-2rem)] sm:w-[380px] rounded-3xl overflow-hidden shadow-2xl flex flex-col border border-white/[0.12] bg-[#1d1d1f]/95 backdrop-blur-2xl"
             style={{
               height: '500px',
-              maxHeight: 'calc(100vh - 8rem)',
-              backgroundColor: 'rgba(29, 29, 31, 0.85)',
-              backdropFilter: 'saturate(180%) blur(40px)',
-              WebkitBackdropFilter: 'saturate(180%) blur(40px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              maxHeight: 'calc(100vh - 7rem)',
             }}
           >
             {/* Header */}
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08] shrink-0">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08] bg-white/[0.02] shrink-0">
               <div className="siri-orb-mini">
-                <span className="relative z-10 text-[10px] font-bold text-[#f5f5f7]">S</span>
+                <span className="relative z-10 text-[11px] font-bold text-[#f5f5f7]">S</span>
               </div>
               <div>
-                <p className="font-semibold text-[14px] text-[#f5f5f7] leading-tight">Siya</p>
-                <p className="text-[11px] text-[#86868b]">AI Assistant</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="font-semibold text-[15px] text-[#f5f5f7] leading-tight">Siya</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2997ff]/20 text-[#2997ff] font-semibold">AI</span>
+                </div>
+                <p className="text-[11px] text-[#86868b]">Shashi&apos;s Portfolio Assistant</p>
               </div>
               <div className="ml-auto flex items-center gap-1.5">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
-                <span className="text-[11px] text-[#86868b]">Online</span>
+                <span className="text-[11px] text-[#86868b]">Ready</span>
               </div>
             </div>
 
-            {/* Messages */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+            {/* Messages Area */}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="w-7 h-7 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-[10px] font-bold text-[#86868b]">S</span>
+                    <div className="w-7 h-7 rounded-full bg-[#2997ff]/20 border border-[#2997ff]/30 flex items-center justify-center shrink-0 mt-0.5">
+                      <Sparkles size={13} className="text-[#2997ff]" />
                     </div>
                   )}
-                  <div
-                    className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-[14px] leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-[#0071e3] text-white rounded-br-md'
-                        : 'bg-white/[0.08] text-[#f5f5f7] rounded-bl-md'
-                    }`}
-                  >
-                    {renderMessageContent(msg.content)}
+                  <div className="relative group max-w-[82%]">
+                    <div
+                      className={`px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm ${
+                        msg.role === 'user'
+                          ? 'bg-[#0071e3] text-white rounded-br-sm'
+                          : 'bg-white/[0.08] border border-white/[0.08] text-[#f5f5f7] rounded-bl-sm'
+                      }`}
+                    >
+                      {renderMessageContent(msg.content)}
+                    </div>
+                    {msg.role === 'assistant' && (
+                      <button
+                        onClick={() => copyToClipboard(msg.content, i)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-7 top-2 text-[#86868b] hover:text-[#f5f5f7]"
+                        title="Copy message"
+                      >
+                        {copiedIdx === i ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                      </button>
+                    )}
                   </div>
                   {msg.role === 'user' && (
-                    <div className="w-7 h-7 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0 mt-0.5">
-                      <User size={14} className="text-[#86868b]" />
+                    <div className="w-7 h-7 rounded-full bg-white/[0.1] flex items-center justify-center shrink-0 mt-0.5">
+                      <User size={13} className="text-[#f5f5f7]" />
                     </div>
                   )}
                 </div>
               ))}
 
               {loading && (
-                <div className="flex gap-2 justify-start">
-                  <div className="w-7 h-7 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0">
-                    <span className="text-[10px] font-bold text-[#86868b]">S</span>
+                <div className="flex gap-2.5 justify-start">
+                  <div className="w-7 h-7 rounded-full bg-[#2997ff]/20 border border-[#2997ff]/30 flex items-center justify-center shrink-0">
+                    <Sparkles size={13} className="text-[#2997ff]" />
                   </div>
-                  <div className="bg-white/[0.08] px-4 py-3 rounded-2xl rounded-bl-md">
-                    <Loader2 size={16} className="animate-spin text-[#0071e3]" />
+                  <div className="bg-white/[0.08] border border-white/[0.08] px-4 py-3 rounded-2xl rounded-bl-sm flex items-center gap-2">
+                    <Loader2 size={15} className="animate-spin text-[#2997ff]" />
+                    <span className="text-[13px] text-[#86868b]">Thinking...</span>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Input */}
-            <form onSubmit={handleSubmit} className="shrink-0 px-4 py-3 border-t border-white/[0.08]">
+            {/* Quick Suggestion Chips */}
+            {messages.length < 5 && (
+              <div className="px-4 pb-2 flex flex-wrap gap-1.5 shrink-0">
+                {SUGGESTION_CHIPS.map((chip) => (
+                  <button
+                    key={chip}
+                    onClick={() => sendMessage(chip)}
+                    disabled={loading}
+                    className="text-[11px] px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-[#a1a1a6] hover:text-[#f5f5f7] transition-all"
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Input Form */}
+            <form onSubmit={handleSubmit} className="shrink-0 px-4 py-3 border-t border-white/[0.08] bg-white/[0.01]">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask Siya about Shashi..."
-                  className="flex-1 px-4 py-2.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-[14px] text-[#f5f5f7] placeholder:text-[#424245] focus:outline-none focus:ring-2 focus:ring-[#0071e3]/30 focus:border-[#0071e3]/40 transition-all"
+                  placeholder="Ask Siya about Shashi's experience..."
+                  className="flex-1 px-4 py-2.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-[14px] text-[#f5f5f7] placeholder:text-[#86868b] focus:outline-none focus:ring-2 focus:ring-[#2997ff]/30 focus:border-[#2997ff]/50 transition-all"
                   disabled={loading}
                 />
                 <button
                   type="submit"
                   disabled={loading || !input.trim()}
-                  className="w-10 h-10 rounded-full bg-[#0071e3] hover:bg-[#0077ED] disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center transition-colors shrink-0"
+                  className="w-10 h-10 rounded-full bg-[#0071e3] hover:bg-[#0077ED] disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center transition-all shrink-0 shadow-md"
                   aria-label="Send message"
                 >
-                  <Send size={16} />
+                  <Send size={15} />
                 </button>
               </div>
             </form>

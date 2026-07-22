@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Section from './Section';
 import { profile } from '@/data/profile';
-import { Mail, Github, Linkedin, Instagram, MapPin, Send, BookOpen, ArrowUpRight } from 'lucide-react';
+import { Mail, Github, Linkedin, MapPin, Send, BookOpen, ArrowUpRight } from 'lucide-react';
 
 const socialLinks = [
   {
@@ -32,13 +32,6 @@ const socialLinks = [
     href: profile.contact.medium,
     icon: <BookOpen size={18} />,
     value: 'shashisa.medium.com',
-    external: true,
-  },
-  {
-    label: 'Instagram',
-    href: profile.contact.instagram,
-    icon: <Instagram size={18} />,
-    value: '@shashii_s_a',
     external: true,
   },
 ];

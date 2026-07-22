@@ -8,7 +8,7 @@
 /* ===== Base ===== */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 6.5rem;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -24,30 +24,36 @@ body {
 
 /* ===== Custom Selection ===== */
 ::selection {
-  background-color: rgba(0, 113, 227, 0.3);
-  color: inherit;
+  background-color: rgba(0, 113, 227, 0.35);
+  color: #ffffff;
 }
 
 /* ===== Focus Ring ===== */
 .focus-ring:focus-visible {
-  outline: 2px solid #0071e3;
+  outline: 2px solid #2997ff;
   outline-offset: 2px;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
 }
 
-/* ===== Scrollbar (minimal) ===== */
+/* ===== Scrollbar (minimal ultra-smooth) ===== */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.2);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
   border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(41, 151, 255, 0.6);
+  background-clip: content-box;
 }
 
 /* ===== Section Backgrounds ===== */
@@ -62,14 +68,14 @@ body {
 }
 
 .section-gray {
-  background-color: #f5f5f7;
-  color: #1d1d1f;
+  background-color: #0a0a0c;
+  color: #f5f5f7;
 }
 
-/* ===== Apple Divider ===== */
+/* ===== Apple Dividers ===== */
 .apple-divider {
   height: 1px;
-  background-color: #424245;
+  background-color: rgba(255, 255, 255, 0.1);
   border: none;
 }
 
@@ -82,65 +88,67 @@ body {
 /* ===== Apple Card (Dark) ===== */
 .apple-card {
   background-color: #1d1d1f;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
-  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .apple-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(41, 151, 255, 0.1);
+  border-color: rgba(41, 151, 255, 0.25);
 }
 
 /* ===== Apple Card (Light — for white/gray sections) ===== */
 .apple-card-light {
   background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 24px;
-  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.06);
-  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .apple-card-light:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 2px 8px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 102, 204, 0.2);
 }
 
-/* ===== Apple Card (Feature — colored accent backgrounds) ===== */
+/* ===== Apple Card Feature Presets ===== */
 .apple-card-blue {
-  background: linear-gradient(135deg, #1c1c4e 0%, #0d1b3e 100%);
-  border: 1px solid rgba(0, 113, 227, 0.15);
+  background: linear-gradient(135deg, rgba(28, 28, 78, 0.95) 0%, rgba(13, 27, 62, 0.95) 100%);
+  border: 1px solid rgba(0, 113, 227, 0.25);
   border-radius: 24px;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .apple-card-blue:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 12px 40px rgba(0, 113, 227, 0.2);
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 16px 45px rgba(0, 113, 227, 0.3);
 }
 
 .apple-card-purple {
-  background: linear-gradient(135deg, #2d1b4e 0%, #1a1030 100%);
-  border: 1px solid rgba(175, 82, 222, 0.15);
+  background: linear-gradient(135deg, rgba(45, 27, 78, 0.95) 0%, rgba(26, 16, 48, 0.95) 100%);
+  border: 1px solid rgba(175, 82, 222, 0.25);
   border-radius: 24px;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .apple-card-purple:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 12px 40px rgba(175, 82, 222, 0.2);
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 16px 45px rgba(175, 82, 222, 0.3);
 }
 
 .apple-card-teal {
-  background: linear-gradient(135deg, #0a2e2e 0%, #0d1f2d 100%);
-  border: 1px solid rgba(90, 200, 250, 0.12);
+  background: linear-gradient(135deg, rgba(10, 46, 46, 0.95) 0%, rgba(13, 31, 45, 0.95) 100%);
+  border: 1px solid rgba(90, 200, 250, 0.25);
   border-radius: 24px;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .apple-card-teal:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 12px 40px rgba(90, 200, 250, 0.15);
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 16px 45px rgba(90, 200, 250, 0.25);
 }
 
 /* ===== Gradient Text Effects ===== */
@@ -160,13 +168,6 @@ body {
   animation: gradientShift 4s ease-in-out infinite;
 }
 
-.apple-gradient-text-warm {
-  background: linear-gradient(90deg, #ff6b6b, #ffa94d, #ffd43b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 .apple-gradient-text-cool {
   background: linear-gradient(90deg, #4dabf7, #9775fa, #f06595);
   -webkit-background-clip: text;
@@ -175,91 +176,67 @@ body {
 }
 
 .apple-gradient-text-silver {
-  background: linear-gradient(180deg, #f5f5f7, #86868b);
+  background: linear-gradient(180deg, #ffffff, #a1a1a6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% center; }
-  50% { background-position: 200% center; }
+
+  0%,
+  100% {
+    background-position: 0% center;
+  }
+
+  50% {
+    background-position: 200% center;
+  }
 }
 
-/* ===== Apple Link (blue text + chevron) ===== */
+/* ===== Apple Link Buttons & Actions ===== */
 .apple-link {
   color: #2997ff;
   text-decoration: none;
   font-size: 17px;
+  font-weight: 500;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
 }
 
 .apple-link:hover {
   color: #6cb6ff;
-  text-decoration: underline;
 }
 
 .apple-link::after {
   content: ' ›';
   font-size: 1.1em;
+  margin-left: 2px;
 }
 
-/* ===== Apple Small Link ===== */
 .apple-link-sm {
   color: #2997ff;
   text-decoration: none;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
 }
 
 .apple-link-sm:hover {
   color: #6cb6ff;
-  text-decoration: underline;
 }
 
 .apple-link-sm::after {
   content: ' ›';
+  margin-left: 2px;
 }
 
-/* ===== Apple Link (Dark — for light sections) ===== */
-.apple-link-dark {
-  color: #0066cc;
-  text-decoration: none;
-  font-size: 17px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.apple-link-dark:hover {
-  color: #0071e3;
-  text-decoration: underline;
-}
-
-.apple-link-dark::after {
-  content: ' ›';
-  font-size: 1.1em;
-}
-
-.apple-link-sm-dark {
-  color: #0066cc;
-  text-decoration: none;
-  font-size: 14px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.apple-link-sm-dark:hover {
-  color: #0071e3;
-  text-decoration: underline;
-}
-
-.apple-link-sm-dark::after {
-  content: ' ›';
-}
-
-/* ===== Apple Button (filled blue pill) ===== */
+/* ===== Apple Buttons ===== */
 .apple-btn {
   display: inline-flex;
   align-items: center;
@@ -274,15 +251,16 @@ body {
   text-decoration: none;
   cursor: pointer;
   border: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.4);
+  transition: background-color 0.25s ease, transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease;
 }
 
 .apple-btn:hover {
   background-color: #0077ED;
-  transform: scale(1.02);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 113, 227, 0.55);
 }
 
-/* ===== Apple Button Outline ===== */
 .apple-btn-outline {
   display: inline-flex;
   align-items: center;
@@ -291,78 +269,41 @@ body {
   padding: 0.75rem 1.75rem;
   border-radius: 980px;
   background-color: transparent;
-  color: #0071e3;
+  color: #2997ff;
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
-  border: 1.5px solid #0071e3;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  border: 1.5px solid rgba(41, 151, 255, 0.4);
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.25s ease;
 }
 
 .apple-btn-outline:hover {
-  background-color: #0071e3;
-  color: #ffffff;
-  transform: scale(1.02);
+  background-color: rgba(41, 151, 255, 0.12);
+  border-color: #2997ff;
+  transform: translateY(-2px) scale(1.02);
 }
 
-/* ===== Apple Button Dark (for light backgrounds) ===== */
-.apple-btn-dark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.75rem;
-  border-radius: 980px;
-  background-color: #1d1d1f;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.apple-btn-dark:hover {
-  background-color: #333336;
-  transform: scale(1.02);
-}
-
-/* ===== Resume Heading ===== */
-.resume-heading {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.75rem;
-  border-bottom: 1px solid #d2d2d7;
-  color: #1d1d1f;
-}
-
-/* ===== Skill Pill (Light sections) ===== */
+/* ===== Skill Pill (Light) ===== */
 .skill-pill-light {
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 980px;
   font-size: 13px;
   font-weight: 500;
   color: #1d1d1f;
-  background-color: #f5f5f7;
+  background-color: #ffffff;
   border: 1px solid #d2d2d7;
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
   cursor: default;
 }
 
 .skill-pill-light:hover {
-  background-color: #e8e8ed;
-  transform: scale(1.04);
-}
-
-/* ===== Floating Animation ===== */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  background-color: #0066cc;
+  color: #ffffff;
+  border-color: #0066cc;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
 }
 
 /* ===== Siri Orb ===== */
@@ -382,16 +323,14 @@ body {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    #ff2d55,
-    #af52de,
-    #0071e3,
-    #5ac8fa,
-    #0071e3,
-    #af52de,
-    #ff2d55
-  );
+  background: conic-gradient(from 0deg,
+      #ff2d55,
+      #af52de,
+      #0071e3,
+      #5ac8fa,
+      #0071e3,
+      #af52de,
+      #ff2d55);
   animation: siriRotate 4s linear infinite;
 }
 
@@ -404,13 +343,13 @@ body {
 }
 
 @keyframes siriRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+  0% {
+    transform: rotate(0deg);
+  }
 
-@keyframes siriPulse {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.08); opacity: 1; }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .siri-orb-mini {
@@ -429,16 +368,14 @@ body {
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    #ff2d55,
-    #af52de,
-    #0071e3,
-    #5ac8fa,
-    #0071e3,
-    #af52de,
-    #ff2d55
-  );
+  background: conic-gradient(from 0deg,
+      #ff2d55,
+      #af52de,
+      #0071e3,
+      #5ac8fa,
+      #0071e3,
+      #af52de,
+      #ff2d55);
   animation: siriRotate 4s linear infinite;
 }
 
@@ -450,19 +387,20 @@ body {
   background: #1d1d1f;
 }
 
-/* ===== Subtle Background Glow (for dark sections) ===== */
+/* ===== Background Glow Effects ===== */
 .bg-glow-blue {
   position: relative;
 }
+
 .bg-glow-blue::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 113, 227, 0.06) 0%, transparent 70%);
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(41, 151, 255, 0.08) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -470,15 +408,16 @@ body {
 .bg-glow-purple {
   position: relative;
 }
+
 .bg-glow-purple::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(175, 82, 222, 0.05) 0%, transparent 70%);
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(175, 82, 222, 0.07) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }

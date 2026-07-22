@@ -2,72 +2,87 @@
 
 import { profile } from '@/data/profile';
 import Link from 'next/link';
+import { ArrowUp } from 'lucide-react';
 
 const footerColumns = [
   {
-    title: 'Portfolio',
-    color: '#8b6e4e', // Natural Titanium
-    hoverColor: 'hover:text-[#8b6e4e]',
+    title: 'Navigation',
+    color: '#2997ff',
+    hoverColor: 'hover:text-[#2997ff]',
     links: [
       { label: 'About', href: '/#about' },
-      { label: 'Skills', href: '/#skills' },
+      { label: 'Skills & Tech', href: '/#skills' },
       { label: 'Experience', href: '/#experience' },
-    ],
-  },
-  {
-    title: 'Projects',
-    color: '#af52de', // Deep Purple / Violet
-    hoverColor: 'hover:text-[#af52de]',
-    links: [
-      { label: 'AEGIS AI', href: '/#projects' },
-      { label: 'AI PR Reviewer', href: 'https://github.com/shashiazad/ai-pr-reviewer', external: true },
-      { label: 'SpendClan', href: '/#projects' },
-      { label: 'TeleMock', href: 'https://github.com/shashiazad/idrac', external: true },
-      { label: 'WhatsApp Analyzer', href: '/#projects' },
-    ],
-  },
-  {
-    title: 'Professional',
-    color: '#0066cc', // Blue Titanium
-    hoverColor: 'hover:text-[#0066cc]',
-    links: [
-      { label: 'Dell Technologies', href: 'https://www.dell.com', external: true },
-      { label: 'Referrals', href: '/referrals' },
+      { label: 'Featured Work', href: '/#projects' },
       { label: 'Resume', href: '/#resume' },
     ],
   },
   {
+    title: 'Featured Projects',
+    color: '#af52de',
+    hoverColor: 'hover:text-[#af52de]',
+    links: [
+      { label: 'DISA STIG Agent', href: '/#projects' },
+      { label: 'RAG Document Q&A', href: '/#projects' },
+      { label: 'SpendClan App', href: 'https://spendclan.vercel.app/', external: true },
+      { label: 'TeleMock Platform', href: 'https://github.com/shashiazad/idrac', external: true },
+    ],
+  },
+  {
+    title: 'Professional',
+    color: '#34c759',
+    hoverColor: 'hover:text-[#34c759]',
+    links: [
+      { label: 'Dell Technologies', href: 'https://www.dell.com', external: true },
+      { label: 'Referral Portal', href: '/referrals' },
+      { label: 'Codolio Profile', href: profile.contact.codolio, external: true },
+    ],
+  },
+  {
     title: 'Connect',
-    color: '#059669', // Alpine Green
-    hoverColor: 'hover:text-[#059669]',
+    color: '#5ac8fa',
+    hoverColor: 'hover:text-[#5ac8fa]',
     links: [
       { label: 'LinkedIn', href: profile.contact.linkedin, external: true },
       { label: 'GitHub', href: profile.contact.github, external: true },
       { label: 'Medium', href: profile.contact.medium, external: true },
-      { label: 'Instagram', href: profile.contact.instagram, external: true },
+      { label: 'Email', href: `mailto:${profile.contact.email}` },
     ],
   },
 ];
 
 export default function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="section-gray px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+    <footer className="bg-[#000000] border-t border-white/[0.08] px-4 sm:px-6 lg:px-8 pt-12 pb-8 text-[#86868b]">
       <div className="max-w-[980px] mx-auto">
-        {/* Top Divider */}
-        <div className="apple-divider-light mb-8" />
+        {/* Top Divider & Back to Top */}
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <div className="apple-divider flex-1" />
+          <button
+            onClick={scrollToTop}
+            className="flex items-center gap-1.5 text-[12px] font-semibold text-[#86868b] hover:text-[#2997ff] transition-colors p-1.5 rounded-full hover:bg-white/[0.08]"
+            aria-label="Scroll back to top"
+          >
+            <span>Back to top</span>
+            <ArrowUp size={14} />
+          </button>
+        </div>
 
         {/* Sitemap Columns */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-12">
           {footerColumns.map((col) => (
             <div key={col.title}>
-              {/* Colored Header */}
               <h4
                 className="text-[12px] font-bold mb-4 tracking-[0.08em] uppercase transition-colors"
                 style={{ color: col.color }}
               >
                 {col.title}
               </h4>
-              <ul className="space-y-3">
+              <ul className="space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     {'external' in link && link.external ? (
@@ -75,14 +90,14 @@ export default function Footer() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-[12.5px] text-[#6e6e73] font-medium transition-colors duration-200 block ${col.hoverColor}`}
+                        className={`text-[13px] text-[#86868b] font-medium transition-colors duration-200 block ${col.hoverColor}`}
                       >
                         {link.label}
                       </a>
                     ) : (
                       <Link
                         href={link.href}
-                        className={`text-[12.5px] text-[#6e6e73] font-medium transition-colors duration-200 block ${col.hoverColor}`}
+                        className={`text-[13px] text-[#86868b] font-medium transition-colors duration-200 block ${col.hoverColor}`}
                       >
                         {link.label}
                       </Link>
@@ -95,7 +110,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="apple-divider-light mb-5" />
+        <div className="apple-divider mb-5" />
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[12px] text-[#86868b] font-medium">
             Copyright © {new Date().getFullYear()} {profile.name}. All rights reserved.

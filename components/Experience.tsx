@@ -3,58 +3,75 @@
 import { motion } from 'framer-motion';
 import Section from './Section';
 import { profile } from '@/data/profile';
+import { Briefcase, Calendar, MapPin } from 'lucide-react';
 
 export default function Experience() {
   return (
-    <Section id="experience" className="section-dark bg-glow-purple overflow-hidden">
-      {/* Section Heading */}
-      <div className="relative z-10">
+    <Section id="experience" className="section-dark bg-glow-blue overflow-hidden">
+      <div className="relative z-10 max-w-4xl mx-auto">
+        {/* Section Heading */}
         <p className="text-center text-[14px] font-medium tracking-widest uppercase text-[#86868b] mb-3">
-          Career
+          Career Timeline
         </p>
         <h2 className="text-center text-[40px] sm:text-[48px] font-semibold tracking-tight mb-4">
-          <span className="apple-gradient-text-cool">Experience</span>
+          <span className="apple-gradient-text-cool">Professional Experience</span>
         </h2>
         <p className="text-center text-[17px] text-[#86868b] mb-16 max-w-[600px] mx-auto">
-          Building reliable systems, one microservice at a time.
+          Building reliable cloud microservices, node automation, and enterprise ERP logic.
         </p>
 
-        {/* Experience Cards */}
-        <div className="space-y-6">
+        {/* Vertical Timeline */}
+        <div className="relative pl-6 sm:pl-10 space-y-12 border-l-2 border-white/[0.1]">
           {profile.experience.map((exp, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -24 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.12, ease: [0.25, 1, 0.5, 1] as const }}
-              className="apple-card p-8"
+              className="relative group"
             >
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                <div>
-                  <h3 className="text-[24px] font-semibold text-[#f5f5f7] tracking-tight">
-                    {exp.company}
-                  </h3>
-                  <p className="text-[17px] text-[#2997ff] mt-1 font-medium">
-                    {exp.role}
-                  </p>
-                </div>
-                <div className="flex flex-col items-start sm:items-end gap-1 text-[13px] text-[#86868b] shrink-0">
-                  <span>{exp.period}</span>
-                  <span>{exp.location}</span>
-                </div>
+              {/* Timeline Node Icon */}
+              <div className="absolute -left-[31px] sm:-left-[47px] top-1.5 w-10 h-10 rounded-full bg-[#1d1d1f] border-2 border-[#2997ff] flex items-center justify-center text-[#2997ff] shadow-lg group-hover:scale-110 group-hover:border-purple-500 transition-all duration-300">
+                <Briefcase size={18} />
               </div>
 
-              {/* Bullets */}
-              <ul className="mt-6 space-y-3">
-                {exp.bullets.map((b) => (
-                  <li key={b} className="flex items-start gap-3 text-[15px] text-[#86868b] leading-[1.6]">
-                    <span className="mt-[9px] w-[5px] h-[5px] rounded-full bg-[#2997ff] shrink-0" />
-                    {b}
-                  </li>
-                ))}
-              </ul>
+              {/* Card Container */}
+              <div className="apple-card p-6 sm:p-8 backdrop-blur-xl">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-white/[0.08] pb-5 mb-6">
+                  <div>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-[24px] font-semibold text-[#f5f5f7] tracking-tight">
+                        {exp.company}
+                      </h3>
+                      <span className="px-3 py-1 rounded-full text-[12px] font-semibold text-[#2997ff] bg-[#2997ff]/10 border border-[#2997ff]/20">
+                        {exp.role}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4 text-[13px] text-[#86868b] shrink-0 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <Calendar size={14} className="text-[#2997ff]" />
+                      {exp.period}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin size={14} className="text-[#86868b]" />
+                      {exp.location}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bullets */}
+                <ul className="space-y-3.5">
+                  {exp.bullets.map((b, j) => (
+                    <li key={j} className="flex items-start gap-3.5 text-[15px] text-[#a1a1a6] leading-[1.65]">
+                      <span className="mt-[9px] w-[6px] h-[6px] rounded-full bg-[#2997ff] shrink-0" />
+                      <span className="text-justify">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </motion.div>
           ))}
         </div>

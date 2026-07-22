@@ -49,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="relative overflow-x-hidden bg-black text-[#f5f5f7]">
         <Navbar />
-        <main className="relative z-10 pt-24">{children}</main>
+        <main className="relative z-10 pt-14">{children}</main>
         <Footer />
         <SiyaChat />
       </body>

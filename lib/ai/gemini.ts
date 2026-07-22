@@ -1,7 +1,9 @@
 // ---------------------------------------------------------------------------
-// Shared Gemini API caller with automatic model fallback
-// Extracted from app/api/chat/route.ts and generalised for all AI features
+// Shared LLM API caller with automatic fallback
+// Wraps callLLM for unified multi-provider support across all AI features
 // ---------------------------------------------------------------------------
+
+import { callLLM, LLMMessage } from './llm';
 
 export interface GeminiOptions {
   temperature?: number;
@@ -14,106 +16,71 @@ export interface GeminiResult {
   model: string;
 }
 
-/** Content part sent to the Gemini API. */
-interface ContentPart {
+/** Content part format compatibility wrapper */
+export interface ContentPart {
   role: string;
   parts: { text: string }[];
 }
 
-const MODEL_CHAIN = [
-  'gemini-2.5-flash-lite',
-  'gemini-2.0-flash',
-  'gemini-2.0-flash-lite',
-  'gemini-1.5-flash',
-  'gemini-pro',
-];
-
 /**
- * Call Gemini API with automatic model fallback.
- *
- * Two calling conventions:
- * 1. `callGemini(systemPrompt, userContent, options)` — single-turn (AI features)
- * 2. `callGeminiWithContents(contents, options)` — multi-turn (chat route)
+ * Single-turn LLM call for AI features (Job extraction, Resume analysis, Feedback generation)
  */
 export async function callGemini(
   systemPrompt: string,
   userContent: string,
   options?: GeminiOptions,
 ): Promise<GeminiResult> {
-  const contents: ContentPart[] = [
-    { role: 'user', parts: [{ text: `System instructions: ${systemPrompt}` }] },
-    { role: 'model', parts: [{ text: 'Understood. I will follow the instructions.' }] },
-    { role: 'user', parts: [{ text: userContent }] },
+  const messages: LLMMessage[] = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userContent },
   ];
-  return callGeminiWithContents(contents, options);
+
+  const result = await callLLM(messages, {
+    temperature: options?.temperature,
+    maxTokens: options?.maxOutputTokens,
+    jsonMode: options?.jsonMode,
+  });
+
+  return { text: result.text, model: result.model };
 }
 
 /**
- * Call Gemini with a pre-built contents array (used by the chat route
- * which manages its own multi-turn conversation history).
+ * Multi-turn LLM call compatibility wrapper
  */
 export async function callGeminiWithContents(
   contents: ContentPart[],
   options?: GeminiOptions,
 ): Promise<GeminiResult> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not configured');
-  }
+  const messages: LLMMessage[] = [];
 
-  const temperature = options?.temperature ?? 0.7;
-  const maxOutputTokens = options?.maxOutputTokens ?? 1000;
+  for (const item of contents) {
+    const rawRole = item.role;
+    const text = item.parts.map((p) => p.text).join('\n');
 
-  const generationConfig: Record<string, unknown> = { temperature, maxOutputTokens };
-  if (options?.jsonMode) {
-    generationConfig.responseMimeType = 'application/json';
-  }
-
-  let lastError = '';
-
-  for (const modelName of MODEL_CHAIN) {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents, generationConfig }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      const text =
-        data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      if (!text) {
-        throw new Error(`Gemini (${modelName}) returned an empty response`);
-      }
-      return { text, model: modelName };
-    }
-
-    const errorText = await response.text();
-    console.error(`[gemini] Model ${modelName} failed:`, response.status, errorText);
-    lastError = errorText;
-
-    // Only retry on 404 (model not found); other errors are not transient
-    if (response.status !== 404) {
-      throw new Error(`Gemini API error (${response.status}): ${lastError}`);
+    if (text.startsWith('System instructions: ')) {
+      messages.push({ role: 'system', content: text.replace(/^System instructions:\s*/, '') });
+    } else if (rawRole === 'user') {
+      messages.push({ role: 'user', content: text });
+    } else if (rawRole === 'model' || rawRole === 'assistant') {
+      messages.push({ role: 'assistant', content: text });
     }
   }
 
-  throw new Error(`No available Gemini model. Last error: ${lastError}`);
+  const result = await callLLM(messages, {
+    temperature: options?.temperature,
+    maxTokens: options?.maxOutputTokens,
+    jsonMode: options?.jsonMode,
+  });
+
+  return { text: result.text, model: result.model };
 }
 
 // ---------------------------------------------------------------------------
-// JSON extraction from Gemini text responses
+// JSON extraction from LLM text responses
 // ---------------------------------------------------------------------------
 
 /**
- * Extract a JSON value from a Gemini text response.
- *
- * Strategy:
- * 1. Direct `JSON.parse`
- * 2. Extract from ```json ``` markdown fence
- * 3. Extract from first `{` to last `}`
+ * Extract a JSON object from an LLM text response.
  */
 export function extractJson(raw: string): unknown {
   const trimmed = raw.trim();
@@ -146,5 +113,5 @@ export function extractJson(raw: string): unknown {
     }
   }
 
-  throw new Error('Failed to extract JSON from Gemini response');
+  throw new Error('Failed to extract JSON from LLM response');
 }
