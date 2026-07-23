@@ -38,7 +38,7 @@ export async function callGemini(
   const result = await callLLM(messages, {
     temperature: options?.temperature,
     maxTokens: options?.maxOutputTokens,
-    jsonMode: options?.jsonMode,
+    jsonMode: options?.jsonMode ?? true, // Default to jsonMode true for AI features
   });
 
   return { text: result.text, model: result.model };
@@ -76,11 +76,18 @@ export async function callGeminiWithContents(
 }
 
 // ---------------------------------------------------------------------------
-// JSON extraction from LLM text responses
+// Robust JSON extraction from LLM text responses
 // ---------------------------------------------------------------------------
+
+function sanitizeJsonString(str: string): string {
+  return str
+    .replace(/,\s*([}\]])/g, '$1') // Remove trailing commas in arrays/objects
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, (c) => (c === '\n' || c === '\r' || c === '\t' ? c : '')); // Remove invalid control chars
+}
 
 /**
  * Extract a JSON object from an LLM text response.
+ * Handles direct JSON, markdown code fences, trailing commas, and wrapped text.
  */
 export function extractJson(raw: string): unknown {
   const trimmed = raw.trim();
@@ -92,24 +99,47 @@ export function extractJson(raw: string): unknown {
     // fall through
   }
 
-  // 2. Markdown fence
-  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)```/);
-  if (fenceMatch) {
+  // 2. Markdown fence parse
+  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)```/i);
+  const candidateText = fenceMatch ? fenceMatch[1].trim() : trimmed;
+
+  try {
+    return JSON.parse(candidateText);
+  } catch {
+    // fall through
+  }
+
+  // 3. Extract first { to last } or [ to ]
+  const firstBrace = candidateText.indexOf('{');
+  const lastBrace = candidateText.lastIndexOf('}');
+
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    const sliced = candidateText.slice(firstBrace, lastBrace + 1);
     try {
-      return JSON.parse(fenceMatch[1].trim());
+      return JSON.parse(sliced);
     } catch {
-      // fall through
+      // 4. Try sanitized parse (trailing commas, control chars)
+      try {
+        return JSON.parse(sanitizeJsonString(sliced));
+      } catch {
+        // fall through
+      }
     }
   }
 
-  // 3. First { to last }
-  const firstBrace = trimmed.indexOf('{');
-  const lastBrace = trimmed.lastIndexOf('}');
-  if (firstBrace !== -1 && lastBrace > firstBrace) {
+  // 5. Try array match [ ... ] if root is array
+  const firstBracket = candidateText.indexOf('[');
+  const lastBracket = candidateText.lastIndexOf(']');
+  if (firstBracket !== -1 && lastBracket > firstBracket) {
+    const slicedArray = candidateText.slice(firstBracket, lastBracket + 1);
     try {
-      return JSON.parse(trimmed.slice(firstBrace, lastBrace + 1));
+      return JSON.parse(slicedArray);
     } catch {
-      // fall through
+      try {
+        return JSON.parse(sanitizeJsonString(slicedArray));
+      } catch {
+        // fall through
+      }
     }
   }
 

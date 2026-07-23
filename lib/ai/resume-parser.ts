@@ -33,7 +33,12 @@ export async function extractTextFromPdf(
     }
 
     const data = new Uint8Array(buffer);
-    const doc = await pdfjsLib.getDocument({ data, isEvalSupported: false }).promise;
+    const doc = await pdfjsLib.getDocument({
+      data,
+      isEvalSupported: false,
+      verbosity: 0, // Suppress non-critical PDF.js warnings in server environment
+      disableFontFace: true,
+    }).promise;
 
     const pages: string[] = [];
     for (let i = 1; i <= doc.numPages; i++) {
