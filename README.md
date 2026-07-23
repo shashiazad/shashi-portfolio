@@ -1,4 +1,4 @@
-# Shashi Azad — Software Engineer 2 Portfolio
+# Shashi Azad — Software Engineer II Portfolio
 
 Stack: Next.js 14 + Tailwind CSS + Framer Motion + next-themes + next-seo + Supabase.
 
