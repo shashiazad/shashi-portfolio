@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, User, Loader2, Sparkles, Copy, Check, MessageSquare } from 'lucide-react';
+import { X, Send, User, Loader2, Sparkles, Copy, Check, MessageSquare, Volume2, VolumeX } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -34,8 +34,116 @@ export default function SiyaChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastFallbackIndexRef = useRef(-1);
+
+  // Load available system voices for TTS
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const loadVoices = () => {
+      setVoices(window.speechSynthesis.getVoices());
+    };
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
+
+  const stopSpeech = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  };
+
+  // Stop active voice synthesis when drawer is closed
+  useEffect(() => {
+    if (!open) {
+      stopSpeech();
+    }
+  }, [open]);
+
+  // Select best matching Indian female / teen voice profile
+  const getIndianFemaleVoice = (voiceList: SpeechSynthesisVoice[]) => {
+    if (!voiceList.length) return null;
+
+    const lowerList = voiceList.map((v) => ({
+      voice: v,
+      lang: v.lang.toLowerCase(),
+      name: v.name.toLowerCase(),
+    }));
+
+    // 1. Specific Indian female voice matches
+    const indianFemale = lowerList.find(
+      (v) =>
+        (v.lang.includes('en-in') || v.lang.includes('hi-in') || v.lang.includes('en_in') || v.name.includes('india')) &&
+        (v.name.includes('female') ||
+          v.name.includes('heera') ||
+          v.name.includes('veena') ||
+          v.name.includes('swara') ||
+          v.name.includes('komal') ||
+          v.name.includes('zira') ||
+          v.name.includes('google') ||
+          !v.name.includes('male'))
+    );
+    if (indianFemale) return indianFemale.voice;
+
+    // 2. Any Indian voice (en-IN / hi-IN)
+    const anyIndian = lowerList.find(
+      (v) => v.lang.includes('en-in') || v.lang.includes('hi-in') || v.lang.includes('en_in') || v.name.includes('india')
+    );
+    if (anyIndian) return anyIndian.voice;
+
+    // 3. Fallback: Any female English voice
+    const femaleEnglish = lowerList.find(
+      (v) =>
+        v.lang.startsWith('en') &&
+        (v.name.includes('female') ||
+          v.name.includes('zira') ||
+          v.name.includes('samantha') ||
+          v.name.includes('victoria') ||
+          v.name.includes('karen'))
+    );
+    if (femaleEnglish) return femaleEnglish.voice;
+
+    // 4. Any English voice
+    return lowerList.find((v) => v.lang.startsWith('en'))?.voice || voiceList[0] || null;
+  };
+
+  const stripMarkdown = (text: string) => {
+    return text
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/[*_~`#]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
+  const speakText = (text: string) => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    window.speechSynthesis.cancel();
+
+    const cleaned = stripMarkdown(text);
+    if (!cleaned) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleaned);
+    const availableVoices = voices.length ? voices : window.speechSynthesis.getVoices();
+    const selectedVoice = getIndianFemaleVoice(availableVoices);
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+
+    // Youthful teen/young female pitch & cadence tuning
+    utterance.pitch = 1.2;
+    utterance.rate = 1.05;
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Close on Escape
   useEffect(() => {
@@ -125,12 +233,18 @@ export default function SiyaChat() {
           ? data.message
           : fallbackMessage;
         setMessages((prev) => [...prev, { role: 'assistant', content: safeMessage }]);
+        if (!isMuted) {
+          speakText(safeMessage);
+        }
       } else {
         const fallbackMessage = getFallbackMessage();
         setMessages((prev) => [
           ...prev,
           { role: 'assistant', content: fallbackMessage },
         ]);
+        if (!isMuted) {
+          speakText(fallbackMessage);
+        }
       }
     } catch {
       const fallbackMessage = getFallbackMessage();
@@ -138,6 +252,9 @@ export default function SiyaChat() {
         ...prev,
         { role: 'assistant', content: fallbackMessage },
       ]);
+      if (!isMuted) {
+        speakText(fallbackMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -193,12 +310,33 @@ export default function SiyaChat() {
                 </div>
                 <p className="text-[11px] text-[#86868b]">Shashi&apos;s Portfolio Assistant</p>
               </div>
-              <div className="ml-auto flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                </span>
-                <span className="text-[11px] text-[#86868b]">Ready</span>
+              <div className="ml-auto flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextState = !isMuted;
+                    setIsMuted(nextState);
+                    if (nextState) {
+                      stopSpeech();
+                    }
+                  }}
+                  className={`p-1.5 rounded-full transition-all flex items-center justify-center ${
+                    !isMuted
+                      ? 'bg-[#2997ff]/20 text-[#2997ff] border border-[#2997ff]/40 shadow-[0_0_10px_rgba(41,151,255,0.3)]'
+                      : 'bg-white/[0.06] text-[#86868b] hover:text-[#f5f5f7] hover:bg-white/[0.12] border border-white/[0.08]'
+                  }`}
+                  title={isMuted ? "Unmute voice responses (Indian Female Voice)" : "Mute voice responses"}
+                  aria-label={isMuted ? "Unmute voice responses" : "Mute voice responses"}
+                >
+                  {!isMuted ? <Volume2 size={15} /> : <VolumeX size={15} />}
+                </button>
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                  <span className="text-[11px] text-[#86868b]">Ready</span>
+                </div>
               </div>
             </div>
 
@@ -225,13 +363,24 @@ export default function SiyaChat() {
                       {renderMessageContent(msg.content)}
                     </div>
                     {msg.role === 'assistant' && (
-                      <button
-                        onClick={() => copyToClipboard(msg.content, i)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-7 top-2 text-[#86868b] hover:text-[#f5f5f7]"
-                        title="Copy message"
-                      >
-                        {copiedIdx === i ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                      </button>
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-14 top-2 flex items-center gap-1">
+                        <button
+                          onClick={() => speakText(msg.content)}
+                          className="text-[#86868b] hover:text-[#2997ff] transition-colors p-0.5"
+                          title="Listen to response"
+                          aria-label="Listen to response"
+                        >
+                          <Volume2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard(msg.content, i)}
+                          className="text-[#86868b] hover:text-[#f5f5f7] transition-colors p-0.5"
+                          title="Copy message"
+                          aria-label="Copy message"
+                        >
+                          {copiedIdx === i ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                        </button>
+                      </div>
                     )}
                   </div>
                   {msg.role === 'user' && (
