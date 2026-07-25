@@ -35,84 +35,27 @@ export default function SiyaChat() {
   const [loading, setLoading] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(true);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastFallbackIndexRef = useRef(-1);
-
-  // Load available system voices for TTS
-  useEffect(() => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    const loadVoices = () => {
-      setVoices(window.speechSynthesis.getVoices());
-    };
-    loadVoices();
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-    return () => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = null;
-      }
-    };
-  }, []);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const stopSpeech = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      URL.revokeObjectURL(audioRef.current.src);
+      audioRef.current = null;
     }
+    setIsSpeaking(false);
   };
 
-  // Stop active voice synthesis when drawer is closed
+  // Stop active voice when drawer is closed
   useEffect(() => {
     if (!open) {
       stopSpeech();
     }
   }, [open]);
-
-  // Select best matching Indian female / teen voice profile
-  const getIndianFemaleVoice = (voiceList: SpeechSynthesisVoice[]) => {
-    if (!voiceList.length) return null;
-
-    const lowerList = voiceList.map((v) => ({
-      voice: v,
-      lang: v.lang.toLowerCase(),
-      name: v.name.toLowerCase(),
-    }));
-
-    // 1. Specific Indian female voice matches
-    const indianFemale = lowerList.find(
-      (v) =>
-        (v.lang.includes('en-in') || v.lang.includes('hi-in') || v.lang.includes('en_in') || v.name.includes('india')) &&
-        (v.name.includes('female') ||
-          v.name.includes('heera') ||
-          v.name.includes('veena') ||
-          v.name.includes('swara') ||
-          v.name.includes('komal') ||
-          v.name.includes('zira') ||
-          v.name.includes('google') ||
-          !v.name.includes('male'))
-    );
-    if (indianFemale) return indianFemale.voice;
-
-    // 2. Any Indian voice (en-IN / hi-IN)
-    const anyIndian = lowerList.find(
-      (v) => v.lang.includes('en-in') || v.lang.includes('hi-in') || v.lang.includes('en_in') || v.name.includes('india')
-    );
-    if (anyIndian) return anyIndian.voice;
-
-    // 3. Fallback: Any female English voice
-    const femaleEnglish = lowerList.find(
-      (v) =>
-        v.lang.startsWith('en') &&
-        (v.name.includes('female') ||
-          v.name.includes('zira') ||
-          v.name.includes('samantha') ||
-          v.name.includes('victoria') ||
-          v.name.includes('karen'))
-    );
-    if (femaleEnglish) return femaleEnglish.voice;
-
-    // 4. Any English voice
-    return lowerList.find((v) => v.lang.startsWith('en'))?.voice || voiceList[0] || null;
-  };
 
   const stripMarkdown = (text: string) => {
     return text
@@ -122,27 +65,48 @@ export default function SiyaChat() {
       .trim();
   };
 
-  const speakText = (text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-
-    window.speechSynthesis.cancel();
+  const speakText = async (text: string) => {
+    stopSpeech();
 
     const cleaned = stripMarkdown(text);
     if (!cleaned) return;
 
-    const utterance = new SpeechSynthesisUtterance(cleaned);
-    const availableVoices = voices.length ? voices : window.speechSynthesis.getVoices();
-    const selectedVoice = getIndianFemaleVoice(availableVoices);
+    try {
+      setIsSpeaking(true);
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleaned }),
+      });
 
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
+      if (!res.ok) {
+        console.warn('[TTS] Server returned', res.status);
+        setIsSpeaking(false);
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      audio.onended = () => {
+        URL.revokeObjectURL(url);
+        audioRef.current = null;
+        setIsSpeaking(false);
+      };
+
+      audio.onerror = () => {
+        URL.revokeObjectURL(url);
+        audioRef.current = null;
+        setIsSpeaking(false);
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.error('[TTS] Playback error:', err);
+      setIsSpeaking(false);
     }
-
-    // Youthful teen/young female pitch & cadence tuning
-    utterance.pitch = 1.2;
-    utterance.rate = 1.05;
-
-    window.speechSynthesis.speak(utterance);
   };
 
   // Close on Escape
