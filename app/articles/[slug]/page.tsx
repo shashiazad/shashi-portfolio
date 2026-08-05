@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getSupabaseServerAnon } from '@/lib/supabase/server';
+import { getSupabaseServer } from '@/lib/supabase/server';
 import type { Article } from '@/types/article';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ interface ArticlePageProps {
 }
 
 export default async function ArticleDetailPage({ params }: ArticlePageProps) {
-  const supabase = getSupabaseServerAnon();
+  const supabase = getSupabaseServer();
   const response = await supabase
     .from('articles')
     .select('*')

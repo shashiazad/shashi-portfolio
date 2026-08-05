@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { getSupabaseServerAnon } from '@/lib/supabase/server';
+import { getSupabaseServer } from '@/lib/supabase/server';
 import type { Article } from '@/types/article';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ArticlesPage() {
-  const supabase = getSupabaseServerAnon();
+  const supabase = getSupabaseServer();
   const response = await supabase
     .from('articles')
     .select('id, title, slug, summary, featured_image, published_at')
@@ -22,10 +22,10 @@ export default async function ArticlesPage() {
   return (
     <section className="min-h-screen bg-[#000000] text-[#f5f5f7] py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-10">
+        <div className="mb-10 text-center">
           <p className="text-sm uppercase tracking-[0.24em] text-[#2997ff] mb-3">Writing</p>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Articles & Technical Notes</h1>
-          <p className="mt-4 max-w-3xl text-sm text-[#a1a1a6] leading-7">
+          <p className="mt-4 mx-auto max-w-3xl text-sm text-[#a1a1a6] leading-7">
             A curated collection of published writing and engineering insights focused on backend systems, cloud automation, API architecture, and AI-enabled engineering workflows.
           </p>
         </div>
