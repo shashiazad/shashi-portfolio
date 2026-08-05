@@ -10,10 +10,10 @@ interface Message {
 }
 
 const SUGGESTION_CHIPS = [
+  "Tell me about Shashi.",
   "What are Shashi's key skills?",
-  "Tell me about DISA STIG AI project",
-  "How do I request a referral?",
   "What is Shashi's current role?",
+  "How do I request a referral?",
 ];
 
 const CHAT_FALLBACK_MESSAGES = [
@@ -272,7 +272,7 @@ export default function SiyaChat() {
                   <p className="font-semibold text-[15px] text-[#f5f5f7] leading-tight">Siya</p>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2997ff]/20 text-[#2997ff] font-semibold">AI</span>
                 </div>
-                <p className="text-[11px] text-[#86868b]">Shashi&apos;s Portfolio Assistant</p>
+                <p className="text-[11px] text-[#86868b]">Shashi&apos;s AI Assistant</p>
               </div>
               <div className="ml-auto flex items-center gap-2">
                 <button
@@ -284,11 +284,10 @@ export default function SiyaChat() {
                       stopSpeech();
                     }
                   }}
-                  className={`p-1.5 rounded-full transition-all flex items-center justify-center ${
-                    !isMuted
-                      ? 'bg-[#2997ff]/20 text-[#2997ff] border border-[#2997ff]/40 shadow-[0_0_10px_rgba(41,151,255,0.3)]'
-                      : 'bg-white/[0.06] text-[#86868b] hover:text-[#f5f5f7] hover:bg-white/[0.12] border border-white/[0.08]'
-                  }`}
+                  className={`p-1.5 rounded-full transition-all flex items-center justify-center ${!isMuted
+                    ? 'bg-[#2997ff]/20 text-[#2997ff] border border-[#2997ff]/40 shadow-[0_0_10px_rgba(41,151,255,0.3)]'
+                    : 'bg-white/[0.06] text-[#86868b] hover:text-[#f5f5f7] hover:bg-white/[0.12] border border-white/[0.08]'
+                    }`}
                   title={isMuted ? "Unmute voice responses (Indian Female Voice)" : "Mute voice responses"}
                   aria-label={isMuted ? "Unmute voice responses" : "Mute voice responses"}
                 >
@@ -318,11 +317,10 @@ export default function SiyaChat() {
                   )}
                   <div className="relative group max-w-[82%]">
                     <div
-                      className={`px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm ${
-                        msg.role === 'user'
-                          ? 'bg-[#0071e3] text-white rounded-br-sm'
-                          : 'bg-white/[0.08] border border-white/[0.08] text-[#f5f5f7] rounded-bl-sm'
-                      }`}
+                      className={`px-4 py-3 rounded-2xl text-[14px] leading-relaxed shadow-sm ${msg.role === 'user'
+                        ? 'bg-[#0071e3] text-white rounded-br-sm'
+                        : 'bg-white/[0.08] border border-white/[0.08] text-[#f5f5f7] rounded-bl-sm'
+                        }`}
                     >
                       {renderMessageContent(msg.content)}
                     </div>

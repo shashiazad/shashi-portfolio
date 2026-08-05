@@ -187,19 +187,48 @@ export default function ResumeSection() {
           </div>
         </div>
 
-        {/* Achievements */}
+        {/* Achievements & Publications */}
         <div>
           <h4 className="text-[12px] font-bold uppercase tracking-wider text-[#0066cc] mb-1.5">
-            Achievements
+            Achievements & Publications
           </h4>
-          <ul className="space-y-1">
-            {profile.achievements.map((a, i) => (
-              <li key={i} className="flex items-start gap-2 text-[13px] text-[#424245] text-justify">
-                <span className="mt-[6px] w-1.5 h-1.5 rounded-full shrink-0 bg-[#d97706]" />
-                <span className="text-justify">{a}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-5">
+            <div>
+              <p className="text-[13px] font-semibold text-[#1d1d1f] mb-2">Achievements</p>
+              <ul className="space-y-1">
+                {profile.achievements.map((a, i) => (
+                  <li key={i} className="flex items-start gap-2 text-[13px] text-[#424245] text-justify">
+                    <span className="mt-[6px] w-1.5 h-1.5 rounded-full shrink-0 bg-[#d97706]" />
+                    <span className="text-justify">{a}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {profile.publications?.length ? (
+              <div>
+                <p className="text-[13px] font-semibold text-[#1d1d1f] mb-2">Publications</p>
+                <ul className="space-y-3">
+                  {profile.publications.map((publication, i) => (
+                    <li key={i} className="text-[13px] text-[#424245] leading-snug">
+                      <p className="font-semibold text-[#1d1d1f]">{publication.title}</p>
+                      <p className="text-[#6e6e73]">{publication.venue} • {publication.year}</p>
+                      {publication.link ? (
+                        <a
+                          href={publication.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[#0066cc] hover:text-[#0071e3]"
+                        >
+                          View publication
+                        </a>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
 

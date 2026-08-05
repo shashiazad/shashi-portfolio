@@ -90,7 +90,7 @@ export default function Hero() {
           >
             {[
               { value: 'M.Tech CSE', label: 'NIT Jalandhar' },
-              { value: '1.5+ Years', label: 'Years of Experience' },
+              { value: '2+ Years', label: 'Years of Experience' },
               { value: 'Backend & Cloud', label: 'Core Expertise' },
               { value: 'AI & GenAI', label: 'Current Focus' },
             ].map((stat) => (
