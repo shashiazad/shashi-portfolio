@@ -47,8 +47,11 @@ export default function Contact() {
         <h2 className="text-center text-[40px] sm:text-[48px] font-semibold tracking-tight mb-4">
           <span className="apple-gradient-text">Get in Touch</span>
         </h2>
-        <p className="text-center text-[17px] text-[#86868b] mb-16 max-w-[600px] mx-auto">
+        <p className="text-center text-[17px] text-[#86868b] mb-6 max-w-[600px] mx-auto">
           I&apos;m always open to discussing new opportunities, interesting projects, or just connecting with fellow engineers.
+        </p>
+        <p className="text-center text-[16px] text-[#a1a1a6] mb-10 max-w-[700px] mx-auto leading-relaxed">
+          Looking for a Backend Engineer, Go Developer, Java Engineer, or AI Platform Engineer? I&apos;d be happy to discuss opportunities or collaborate on interesting projects.
         </p>
 
         <div className="grid lg:grid-cols-2 gap-10">

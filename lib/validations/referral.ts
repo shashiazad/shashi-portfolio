@@ -75,3 +75,15 @@ export const jobSchema = z.object({
 });
 
 export type JobFormData = z.infer<typeof jobSchema>;
+
+export const articleSchema = z.object({
+  title: z.string().min(5).max(200),
+  slug: z.string().min(3).max(100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase kebab-case'),
+  summary: z.string().min(20).max(1000),
+  featured_image: z.string().url('Please enter a valid URL').optional().or(z.literal('')).nullable(),
+  content_html: z.string().min(20),
+  is_published: z.boolean().default(false),
+  published_at: z.string().nullable().optional(),
+});
+
+export type ArticleFormData = z.infer<typeof articleSchema>;

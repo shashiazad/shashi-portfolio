@@ -19,8 +19,8 @@ export default function Navbar() {
     { href: '#skills', label: 'Skills' },
     { href: '#experience', label: 'Experience' },
     { href: '#projects', label: 'Projects' },
+    { href: '/articles', label: 'Articles' },
     { href: '#publications', label: 'Publications' },
-    { href: '#resume', label: 'Resume' },
     { href: '/referrals', label: 'Referrals' },
     { href: '#contact', label: 'Contact' },
   ];

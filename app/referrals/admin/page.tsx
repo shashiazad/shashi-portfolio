@@ -1,19 +1,21 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Trash2, Edit3, Download, ExternalLink, Briefcase, Users, X,
   ChevronDown, ChevronRight, Search, Calendar, CheckCircle, XCircle, Loader2,
-  Brain, MessageSquare, Sparkles, Copy, Share2, AlertTriangle,
+  Brain, MessageSquare, Sparkles, Copy, Share2, AlertTriangle, BookOpen,
 } from 'lucide-react';
 import type { Job, ReferralRequest, ReferralAnalysis, CandidateFeedback } from '@/types/referral';
+import type { Article } from '@/types/article';
 
 const inputCls = 'rounded-xl px-4 py-2.5 bg-white/[0.04] border border-white/10 text-[#f5f5f7] placeholder-[#424245] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all w-full';
 
 export default function AdminPage() {
   // Tabs
-  const [tab, setTab] = useState<'jobs' | 'referrals'>('referrals');
+  const [tab, setTab] = useState<'jobs' | 'referrals' | 'articles'>('referrals');
 
   // Jobs state
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -37,6 +39,21 @@ export default function AdminPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmAction, setConfirmAction] = useState<{ id: string; label: string } | null>(null);
+
+  // Articles state
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [articleForm, setArticleForm] = useState({
+    title: '',
+    slug: '',
+    summary: '',
+    featured_image: '',
+    content_html: '',
+    is_published: false,
+    published_at: '',
+  });
+  const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
+  const [showArticleForm, setShowArticleForm] = useState(false);
+  const [articleValidationErrors, setArticleValidationErrors] = useState<Record<string, string>>({});
 
   // AI Analysis state
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
@@ -68,10 +85,19 @@ export default function AdminPage() {
     }
   }, []);
 
+  const fetchArticles = useCallback(async () => {
+    const res = await fetch('/api/admin/articles');
+    if (res.ok) {
+      const json = await res.json();
+      setArticles(json.data?.articles ?? []);
+    }
+  }, []);
+
   useEffect(() => {
     fetchJobs();
     fetchReferrals();
-  }, [fetchJobs, fetchReferrals]);
+    fetchArticles();
+  }, [fetchJobs, fetchReferrals, fetchArticles]);
 
   // Filtered referrals
   const filteredReferrals = useMemo(() => {
@@ -186,6 +212,67 @@ export default function AdminPage() {
     } finally {
       setExtracting(false);
     }
+  };
+
+  const handleSaveArticle = async () => {
+    setArticleValidationErrors({});
+    const body: Record<string, unknown> = {
+      ...(editingArticleId ? { id: editingArticleId } : {}),
+      title: articleForm.title,
+      slug: articleForm.slug,
+      summary: articleForm.summary,
+      featured_image: articleForm.featured_image || null,
+      content_html: articleForm.content_html,
+      is_published: articleForm.is_published,
+      published_at: articleForm.published_at || null,
+    };
+
+    const method = editingArticleId ? 'PATCH' : 'POST';
+    const res = await fetch('/api/admin/articles', { method, headers: jsonHeaders, body: JSON.stringify(body) });
+    const json = await res.json();
+    if (res.ok) {
+      resetArticleForm();
+      fetchArticles();
+    } else {
+      if (json.fieldErrors) setArticleValidationErrors(json.fieldErrors);
+      alert(json.error || 'Failed to save article');
+    }
+  };
+
+  const handleEditArticle = (article: Article) => {
+    setEditingArticleId(article.id);
+    setShowArticleForm(true);
+    setArticleValidationErrors({});
+    setArticleForm({
+      title: article.title,
+      slug: article.slug,
+      summary: article.summary,
+      featured_image: article.featured_image || '',
+      content_html: article.content_html,
+      is_published: article.is_published,
+      published_at: article.published_at ? article.published_at.slice(0, 10) : '',
+    });
+  };
+
+  const resetArticleForm = () => {
+    setEditingArticleId(null);
+    setShowArticleForm(false);
+    setArticleValidationErrors({});
+    setArticleForm({
+      title: '',
+      slug: '',
+      summary: '',
+      featured_image: '',
+      content_html: '',
+      is_published: false,
+      published_at: '',
+    });
+  };
+
+  const handleDeleteArticle = async (id: string) => {
+    if (!confirm('Delete this article permanently?')) return;
+    const res = await fetch('/api/admin/articles', { method: 'DELETE', headers: jsonHeaders, body: JSON.stringify({ id }) });
+    if (res.ok) fetchArticles();
   };
 
   // --- Referral handlers ---
@@ -329,6 +416,9 @@ export default function AdminPage() {
           <div className="flex gap-2 mb-8">
             <button onClick={() => setTab('referrals')} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === 'referrals' ? 'bg-[#0071e3] text-white shadow-glow' : 'bg-white/[0.04] text-[#86868b] border border-white/10 hover:text-[#f5f5f7]'}`}>
               <Users size={16} /> Referrals ({referrals.length})
+            </button>
+            <button onClick={() => setTab('articles')} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === 'articles' ? 'bg-[#0071e3] text-white shadow-glow' : 'bg-white/[0.04] text-[#86868b] border border-white/10 hover:text-[#f5f5f7]'}`}>
+              <BookOpen size={16} /> Articles ({articles.length})
             </button>
             <button onClick={() => setTab('jobs')} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${tab === 'jobs' ? 'bg-[#0071e3] text-white shadow-glow' : 'bg-white/[0.04] text-[#86868b] border border-white/10 hover:text-[#f5f5f7]'}`}>
               <Briefcase size={16} /> Jobs ({jobs.length})
@@ -689,6 +779,142 @@ export default function AdminPage() {
           )}
 
           {/* ===================== JOBS TAB ===================== */}
+          {tab === 'articles' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-[#f5f5f7] tracking-tight">Manage Articles</h2>
+                <button onClick={() => { resetArticleForm(); setShowArticleForm(true); }} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-[#000000] bg-[#30d158] hover:bg-[#30d158]/90 transition-colors">
+                  <Plus size={14} /> Add Article
+                </button>
+              </div>
+
+              {showArticleForm && (
+                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 mb-6 relative">
+                  <button onClick={resetArticleForm} className="absolute top-4 right-4 text-[#86868b] hover:text-[#f5f5f7]" aria-label="Close form"><X size={18} /></button>
+                  <h3 className="font-semibold text-[#f5f5f7] mb-4">{editingArticleId ? 'Edit Article' : 'New Article'}</h3>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="sm:col-span-2">
+                      <input
+                        value={articleForm.title}
+                        onChange={(e) => setArticleForm({ ...articleForm, title: e.target.value })}
+                        placeholder="Title *"
+                        className={inputCls}
+                      />
+                      {articleValidationErrors.title && <p className="mt-2 text-[12px] text-[#ff453a]">{articleValidationErrors.title}</p>}
+                    </div>
+
+                    <input
+                      value={articleForm.slug}
+                      onChange={(e) => setArticleForm({ ...articleForm, slug: e.target.value })}
+                      placeholder="Slug (lowercase kebab-case) *"
+                      className={inputCls}
+                    />
+                    {articleValidationErrors.slug && <p className="text-[12px] text-[#ff453a]">{articleValidationErrors.slug}</p>}
+
+                    <div className="sm:col-span-2">
+                      <input
+                        value={articleForm.summary}
+                        onChange={(e) => setArticleForm({ ...articleForm, summary: e.target.value })}
+                        placeholder="Summary *"
+                        className={inputCls}
+                      />
+                      {articleValidationErrors.summary && <p className="mt-2 text-[12px] text-[#ff453a]">{articleValidationErrors.summary}</p>}
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <input
+                        value={articleForm.featured_image}
+                        onChange={(e) => setArticleForm({ ...articleForm, featured_image: e.target.value })}
+                        placeholder="Featured image URL"
+                        className={inputCls}
+                      />
+                      {articleValidationErrors.featured_image && <p className="mt-2 text-[12px] text-[#ff453a]">{articleValidationErrors.featured_image}</p>}
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-medium text-[#86868b] mb-2">Published</label>
+                      <div className="flex flex-wrap gap-3 items-center">
+                        <label className="inline-flex items-center gap-2 text-sm text-[#f5f5f7]">
+                          <input
+                            type="checkbox"
+                            checked={articleForm.is_published}
+                            onChange={(e) => setArticleForm({ ...articleForm, is_published: e.target.checked })}
+                            className="h-4 w-4 rounded bg-white/[0.04] border border-white/10"
+                          />
+                          Publish now
+                        </label>
+                        <input
+                          type="date"
+                          value={articleForm.published_at}
+                          onChange={(e) => setArticleForm({ ...articleForm, published_at: e.target.value })}
+                          className={`${inputCls} max-w-[220px]`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <textarea
+                        value={articleForm.content_html}
+                        onChange={(e) => setArticleForm({ ...articleForm, content_html: e.target.value })}
+                        placeholder="Article content (HTML or plain text) *"
+                        rows={8}
+                        className={`${inputCls} resize-none`}
+                      />
+                      {articleValidationErrors.content_html && <p className="mt-2 text-[12px] text-[#ff453a]">{articleValidationErrors.content_html}</p>}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button onClick={handleSaveArticle} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0071e3] hover:bg-[#0071e3]/90 transition-colors">
+                      {editingArticleId ? 'Update Article' : 'Create Article'}
+                    </button>
+                    <button onClick={resetArticleForm} className="px-5 py-2.5 rounded-xl text-sm font-semibold text-[#86868b] hover:bg-white/[0.04] hover:text-[#f5f5f7] transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {articles.map((article) => (
+                  <div key={article.id} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 flex flex-col gap-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <span className="text-sm font-semibold text-[#f5f5f7]">{article.title}</span>
+                          <span className="text-[10px] px-2 py-1 rounded-full bg-[#0071e3]/10 text-[#2997ff]">{article.is_published ? 'Published' : 'Draft'}</span>
+                          <span className="text-[10px] px-2 py-1 rounded-full bg-white/[0.04] text-[#86868b]">{article.slug}</span>
+                        </div>
+                        <p className="text-sm text-[#a1a1a6] line-clamp-3">{article.summary}</p>
+                        <p className="text-xs text-[#86868b] mt-3">
+                          {article.published_at ? `Published ${new Date(article.published_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}` : 'Not published yet'}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={`/articles/${article.slug}`}
+                          className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-[#2997ff] bg-[#2997ff]/10 hover:bg-[#2997ff]/15 transition-colors"
+                        >
+                          View
+                        </Link>
+                        <button onClick={() => handleEditArticle(article)} className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-[#86868b] hover:text-[#2997ff] hover:bg-white/[0.04] transition-colors">
+                          <Edit3 size={14} /> Edit
+                        </button>
+                        <button onClick={() => handleDeleteArticle(article.id)} className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-[#ff453a] hover:bg-[#ff453a]/10 transition-colors">
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {articles.length === 0 && (
+                  <p className="text-center text-sm text-[#86868b] py-8">No articles yet. Add one to publish your writing.</p>
+                )}
+              </div>
+            </div>
+          )}
+
           {tab === 'jobs' && (
             <div>
               <div className="flex items-center justify-between mb-6">

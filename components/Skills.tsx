@@ -17,7 +17,7 @@ import {
 
 interface SkillCategory {
   name: string;
-  group: 'Languages & AI' | 'Backend & Cloud' | 'Engineering & Tools';
+  group: 'Programming' | 'Backend & Databases' | 'Cloud & DevOps' | 'AI & LLM' | 'Engineering & Tools';
   description: string;
   items: string[];
   icon: JSX.Element;
@@ -29,72 +29,48 @@ export default function Skills() {
 
   const categories: SkillCategory[] = [
     {
-      name: 'Programming Languages',
-      group: 'Languages & AI',
-      description: 'Core languages for backend services, automation & systems.',
-      items: ['Go', 'Java', 'Python', 'C#', 'C++', 'TypeScript'],
+      name: 'Programming',
+      group: 'Programming',
+      description: 'Core backend and systems languages.',
+      items: ['Java', 'Go', 'Python', 'C/C++'],
       icon: <Code2 size={18} className="text-[#2997ff]" />,
       accentColor: '#2997ff',
     },
     {
-      name: 'AI & Agentic Frameworks',
-      group: 'Languages & AI',
-      description: 'Orchestrating agentic workflows, RAG & LLM pipelines.',
-      items: ['LangGraph', 'LangChain', 'RAG Pipelines', 'Transformers', 'ChromaDB', 'Gemini API', 'Gen AI SDK'],
-      icon: <Sparkles size={18} className="text-[#af52de]" />,
-      accentColor: '#af52de',
-    },
-    {
-      name: 'AI Coding Environments',
-      group: 'Languages & AI',
-      description: 'AI-assisted dev tools accelerating velocity & quality.',
-      items: ['Claude Code', 'Devin', 'Windsurf', 'VS Code'],
-      icon: <Bot size={18} className="text-[#bf5af2]" />,
-      accentColor: '#bf5af2',
-    },
-    {
-      name: 'Backend & Microservices',
-      group: 'Backend & Cloud',
-      description: 'Production RESTful APIs, Spring Boot & distributed logic.',
-      items: ['RESTful APIs', 'Microservices', 'Distributed Systems', 'Spring Boot', 'API Integration'],
+      name: 'Backend & Databases',
+      group: 'Backend & Databases',
+      description: 'API, microservice, and data platform design.',
+      items: ['REST APIs', 'Microservices', 'Distributed Systems', 'PostgreSQL', 'FAISS (Vector DB)'],
       icon: <Layers size={18} className="text-[#34c759]" />,
       accentColor: '#34c759',
     },
     {
-      name: 'Cloud & Infrastructure',
-      group: 'Backend & Cloud',
-      description: 'Linux systems, container orchestration, NGINX & mTLS security.',
-      items: ['Linux', 'Docker', 'Kubernetes', 'NGINX', 'AWS', 'mTLS', 'Security Best Practices'],
+      name: 'Cloud & DevOps',
+      group: 'Cloud & DevOps',
+      description: 'Infrastructure, deployment automation, and operations.',
+      items: ['Linux', 'Docker', 'Kubernetes', 'NGINX', 'Git', 'GitHub Actions', 'CI/CD', 'Shell Scripting'],
       icon: <Cloud size={18} className="text-[#64d2ff]" />,
       accentColor: '#64d2ff',
     },
     {
-      name: 'Databases & Storage',
-      group: 'Backend & Cloud',
-      description: 'Relational data stores, query optimization & SQL procedures.',
-      items: ['PostgreSQL', 'MySQL', 'Microsoft SQL Server'],
-      icon: <Database size={18} className="text-[#ff9f0a]" />,
-      accentColor: '#ff9f0a',
+      name: 'AI & LLM',
+      group: 'AI & LLM',
+      description: 'Agentic AI, LLM orchestration, and embedding systems.',
+      items: ['LangGraph', 'LangChain', 'Agentic AI', 'Multi-Agent System', 'RAG', 'Embedding Models', 'Prompt Engineering', 'MCP'],
+      icon: <Sparkles size={18} className="text-[#af52de]" />,
+      accentColor: '#af52de',
     },
     {
-      name: 'Development & CI/CD',
+      name: 'Engineering & Tools',
       group: 'Engineering & Tools',
-      description: 'Version control, automated build pipelines & scripting.',
-      items: ['Git', 'GitHub Actions', 'CI/CD Pipelines', 'Maven', 'Shell Scripting'],
-      icon: <Wrench size={18} className="text-[#a1a1a6]" />,
-      accentColor: '#a1a1a6',
-    },
-    {
-      name: 'Quality & Engineering',
-      group: 'Engineering & Tools',
-      description: 'System design, unit testing, code reviews & SDLC ownership.',
-      items: ['System Design', 'Debugging', 'Unit Testing', 'Code Reviews', 'Agile / Scrum', 'User Story Ownership'],
+      description: 'Design, validation, and software delivery practices.',
+      items: ['System Design', 'Debugging', 'Unit Testing', 'Code Reviews', 'Agile / Scrum'],
       icon: <ShieldCheck size={18} className="text-[#30b0c7]" />,
       accentColor: '#30b0c7',
     },
   ];
 
-  const filterTabs = ['All', 'Languages & AI', 'Backend & Cloud', 'Engineering & Tools'];
+  const filterTabs = ['All', 'Programming', 'Backend & Databases', 'Cloud & DevOps', 'AI & LLM', 'Engineering & Tools'];
 
   const filteredCategories = activeFilter === 'All'
     ? categories

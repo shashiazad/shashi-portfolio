@@ -21,6 +21,17 @@ interface Project {
   year: string;
 }
 
+const getProjectLinkLabel = (link: string) => {
+  const normalized = link.toLowerCase();
+
+  if (normalized.includes('github.com')) return 'GitHub';
+  if (normalized.includes('architecture') || normalized.includes('arch')) return 'Architecture';
+  if (normalized.includes('case-study') || normalized.includes('casestudy') || normalized.includes('case-study') || normalized.includes('case_study')) return 'Case Study';
+  if (normalized.includes('blog') || normalized.includes('medium') || normalized.includes('dev.to')) return 'Case Study';
+  if (normalized === '#' || normalized.trim().length === 0) return 'Explore';
+  return 'Live Demo';
+};
+
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeFilter, setActiveFilter] = useState('All');
@@ -126,6 +137,11 @@ export default function Projects() {
                         +{p.stack.length - 4}
                       </span>
                     )}
+                  </div>
+
+                  {/* Link label */}
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a1a1a6] border border-white/[0.08]">
+                    <span className="text-[#2997ff]">{getProjectLinkLabel(p.link)}</span>
                   </div>
                 </div>
               </motion.article>

@@ -14,8 +14,8 @@ const footerColumns = [
       { label: 'Skills & Tech', href: '/#skills' },
       { label: 'Experience', href: '/#experience' },
       { label: 'Featured Work', href: '/#projects' },
+      { label: 'Articles', href: '/articles' },
       { label: 'Publications', href: '/#publications' },
-      { label: 'Resume', href: '/#resume' },
     ],
   },
   {

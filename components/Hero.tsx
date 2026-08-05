@@ -34,7 +34,7 @@ export default function Hero() {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
               <span className="text-[13px] font-medium text-[#f5f5f7] tracking-wide">
-                Available for Software & Infrastructure Roles
+                Open to Backend Software Engineering, Distributed Systems, Cloud Infrastructure, and AI Platform roles.
               </span>
             </div>
           </motion.div>
@@ -60,8 +60,8 @@ export default function Hero() {
             variants={fadeUp}
             className="mt-5 text-[17px] sm:text-[19px] leading-[1.6] text-[#a1a1a6] max-w-[650px] mx-auto"
           >
-            Building distributed private-cloud microservices in Go & Python.
-            Specialized in REST APIs, Nutanix Prism automation, mTLS security, and Agentic AI compliance frameworks.
+            Backend Software Engineer specializing in Distributed Systems, Cloud-Native Platforms, and AI Applications
+            Building scalable backend systems, cloud infrastructure, and intelligent AI solutions with modern software engineering practices.
           </motion.p>
 
           {/* CTAs */}

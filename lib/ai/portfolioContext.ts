@@ -8,7 +8,6 @@ import { CONSTITUTION_PROMPT } from '@/lib/constitution';
 export function getPortfolioSystemPrompt(): string {
   const skillsFormatted = [
     `Programming Languages: ${profile.skills.languages.join(', ')}`,
-    `AI Coding Tools: ${profile.skills.aiTools.join(', ')}`,
     `Software Quality & Testing: ${profile.skills.testing.join(', ')}`,
     `Development Tools: ${profile.skills.tools.join(', ')}`,
     `Backend & APIs: ${profile.skills.backend.join(', ')}`,
