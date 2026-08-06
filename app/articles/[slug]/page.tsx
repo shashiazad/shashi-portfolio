@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getSupabaseServer } from '@/lib/supabase/server';
+import { ArticleBody } from '@/lib/article-content';
 import type { Article } from '@/types/article';
 
 export const dynamic = 'force-dynamic';
@@ -44,9 +45,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
           </div>
         ) : null}
 
-        <div className="prose prose-invert max-w-none prose-a:text-[#2997ff] prose-a:no-underline prose-p:text-[#d4d4d8] prose-li:text-[#d4d4d8] prose-strong:text-[#f5f5f7]">
-          <div dangerouslySetInnerHTML={{ __html: data.content_html }} />
-        </div>
+        <ArticleBody content={data.content_html} />
       </div>
     </article>
   );

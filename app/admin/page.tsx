@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { Job, ReferralRequest, ReferralAnalysis, CandidateFeedback } from '@/types/referral';
 import type { Article } from '@/types/article';
+import { ArticleBody } from '@/lib/article-content';
 
 const inputCls = 'rounded-xl px-4 py-2.5 bg-white/[0.04] border border-white/10 text-[#f5f5f7] placeholder-[#424245] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all w-full';
 
@@ -854,14 +855,23 @@ export default function AdminPage() {
                     </div>
 
                     <div className="sm:col-span-2">
+                      <label className="block text-xs font-medium text-[#86868b] mb-2">Content</label>
                       <textarea
                         value={articleForm.content_html}
                         onChange={(e) => setArticleForm({ ...articleForm, content_html: e.target.value })}
-                        placeholder="Article content (HTML or plain text) *"
+                        placeholder="Write markdown or paste HTML here..."
                         rows={8}
                         className={`${inputCls} resize-none`}
                       />
                       {articleValidationErrors.content_html && <p className="mt-2 text-[12px] text-[#ff453a]">{articleValidationErrors.content_html}</p>}
+
+                      <div className="mt-4 rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+                        <div className="mb-3 flex items-center justify-between">
+                          <p className="text-sm font-semibold text-[#f5f5f7]">Preview</p>
+                          <p className="text-[11px] uppercase tracking-[0.2em] text-[#86868b]">Markdown + HTML</p>
+                        </div>
+                        <ArticleBody content={articleForm.content_html} />
+                      </div>
                     </div>
                   </div>
 
