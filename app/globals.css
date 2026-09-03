@@ -35,6 +35,30 @@ body {
   border-radius: 0.75rem;
 }
 
+/* Global keyboard-focus visibility for interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #2997ff;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ===== Scrollbar (minimal ultra-smooth) ===== */
 ::-webkit-scrollbar {
   width: 8px;
@@ -340,6 +364,15 @@ body {
   inset: 3px;
   border-radius: 50%;
   background: #000000;
+}
+
+.siri-orb:hover::after {
+  background: #0a0a0a;
+}
+
+/* Inviting idle halo behind the chat orb */
+.siri-orb {
+  box-shadow: 0 10px 40px rgba(41, 151, 255, 0.28);
 }
 
 @keyframes siriRotate {

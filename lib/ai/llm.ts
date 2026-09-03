@@ -35,15 +35,56 @@ const GEMINI_MODEL_CHAIN = [
 ];
 
 /**
+ * Default model fallback chain for OpenAI-compatible providers.
+ *
+ * Tuned for Groq (https://console.groq.com/docs/models) as of 2026: the older
+ * `llama-3.x-*-versatile` models were decommissioned, so we default to the
+ * OpenAI OSS models which are the current production replacements. The primary
+ * model can be overridden with `LLM_MODEL` and the backups with
+ * `LLM_MODEL_FALLBACKS` (comma-separated).
+ */
+const GROQ_MODEL_CHAIN = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.1-8b-instant'];
+const OPENAI_MODEL_CHAIN = ['gpt-4o-mini'];
+
+/**
+ * Build the ordered list of models to try for an OpenAI-compatible endpoint.
+ * `LLM_MODEL` (if set) is always tried first, followed by `LLM_MODEL_FALLBACKS`
+ * and then a provider-appropriate default chain. Duplicates are removed.
+ */
+function resolveModelChain(baseUrl: string): string[] {
+  const primary = process.env.LLM_MODEL?.trim();
+  const explicitFallbacks = (process.env.LLM_MODEL_FALLBACKS || '')
+    .split(',')
+    .map((m) => m.trim())
+    .filter(Boolean);
+
+  const defaultChain = baseUrl.includes('groq')
+    ? GROQ_MODEL_CHAIN
+    : baseUrl.includes('openai')
+    ? OPENAI_MODEL_CHAIN
+    : primary
+    ? []
+    : OPENAI_MODEL_CHAIN;
+
+  const chain = [primary, ...explicitFallbacks, ...defaultChain].filter(
+    (m): m is string => Boolean(m)
+  );
+
+  return Array.from(new Set(chain));
+}
+
+/**
  * Universal callLLM function.
  * Supports OpenAI-compatible endpoints (OpenAI, Groq, OpenRouter, Ollama, LocalAI, vLLM)
  * and Google Gemini.
  *
  * Configuration via environment variables:
  * - `LLM_API_KEY` or `OPENAI_API_KEY`: API key for OpenAI-compatible services.
- * - `LLM_MODEL`: Model name (e.g. "gpt-4o-mini", "llama-3.3-70b-versatile", "claude-3-5-haiku-20241022").
- * - `LLM_BASE_URL`: Base URL for OpenAI-compatible endpoint (e.g. "https://api.openai.com/v1", "https://api.groq.com/openai/v1", "https://openrouter.ai/api/v1", "http://localhost:11434/v1").
- * - `GEMINI_API_KEY`: Fallback API key if using Google Gemini.
+ * - `LLM_MODEL`: Primary model name (e.g. "openai/gpt-oss-120b", "gpt-4o-mini").
+ * - `LLM_MODEL_FALLBACKS`: Comma-separated backup models tried if the primary fails.
+ * - `LLM_BASE_URL`: Base URL for the OpenAI-compatible endpoint
+ *   (e.g. "https://api.groq.com/openai/v1", "https://openrouter.ai/api/v1").
+ * - `GEMINI_API_KEY`: Final fallback if the OpenAI-compatible chain is exhausted.
  */
 export async function callLLM(
   messages: LLMMessage[],
@@ -51,21 +92,40 @@ export async function callLLM(
 ): Promise<LLMResult> {
   const apiKey = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY;
   const baseUrl = (process.env.LLM_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
-  const model = process.env.LLM_MODEL || 'gpt-4o-mini';
+  const hasGemini = Boolean(process.env.GEMINI_API_KEY);
 
-  // If an OpenAI-compatible API key or custom non-OpenAI base URL (like local Ollama) is configured, use OpenAI protocol
+  // If an OpenAI-compatible API key or custom non-OpenAI base URL (like local Ollama)
+  // is configured, use the OpenAI protocol with an automatic model fallback chain.
   if (apiKey || process.env.LLM_BASE_URL) {
-    return callOpenAICompatible(messages, {
-      apiKey: apiKey || 'no-key-required',
-      baseUrl,
-      model,
-      temperature: options?.temperature ?? 0.7,
-      maxTokens: options?.maxTokens ?? 1000,
-      jsonMode: options?.jsonMode ?? false,
-    });
+    const models = resolveModelChain(baseUrl);
+    let lastError: unknown = null;
+
+    for (const model of models) {
+      try {
+        return await callOpenAICompatible(messages, {
+          apiKey: apiKey || 'no-key-required',
+          baseUrl,
+          model,
+          temperature: options?.temperature ?? 0.7,
+          maxTokens: options?.maxTokens ?? 1000,
+          jsonMode: options?.jsonMode ?? false,
+        });
+      } catch (err) {
+        lastError = err;
+        console.warn(`[LLM] Model "${model}" failed, trying next fallback...`, err instanceof Error ? err.message : err);
+      }
+    }
+
+    // OpenAI-compatible chain exhausted — fall through to Gemini if available.
+    if (!hasGemini) {
+      throw lastError instanceof Error
+        ? lastError
+        : new Error('All configured LLM models failed and no GEMINI_API_KEY fallback is set.');
+    }
+    console.warn('[LLM] OpenAI-compatible chain exhausted — falling back to Gemini.');
   }
 
-  // Otherwise, fallback to Gemini API using GEMINI_API_KEY
+  // Otherwise (or as a last resort), use the Gemini API with GEMINI_API_KEY.
   return callGeminiFallback(messages, options);
 }
 
@@ -111,8 +171,8 @@ async function callOpenAICompatible(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error(`[LLM] API call to ${endpoint} failed:`, response.status, errorText);
-    throw new Error(`LLM API error (${response.status}): ${errorText}`);
+    console.error(`[LLM] API call to ${endpoint} (${config.model}) failed:`, response.status, errorText);
+    throw new Error(`LLM API error (${response.status}) for model ${config.model}: ${errorText}`);
   }
 
   const data = await response.json();
@@ -124,7 +184,7 @@ async function callOpenAICompatible(
   return {
     text,
     model: config.model,
-    provider: config.baseUrl.includes('openai')
+    provider: config.baseUrl.includes('openai') && !config.baseUrl.includes('groq')
       ? 'openai'
       : config.baseUrl.includes('groq')
       ? 'groq'
@@ -150,7 +210,7 @@ async function callGeminiFallback(
 
   // Convert LLMMessage array to Gemini contents format
   const contents: GeminiContentPart[] = [];
-  
+
   // Extract system prompt if present
   const systemMsg = messages.find((m) => m.role === 'system');
   const nonSystemMsgs = messages.filter((m) => m.role !== 'system');

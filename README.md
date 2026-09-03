@@ -95,9 +95,15 @@ Three AI-powered features enhance the admin workflow, powered by Google Gemini w
 ### AI Configuration
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `GEMINI_API_KEY` | — | Google Gemini API key (required for AI features) |
+| `LLM_API_KEY` | — | API key for an OpenAI-compatible provider (Groq `gsk_…`, OpenAI `sk-…`, OpenRouter, …) |
+| `LLM_BASE_URL` | `https://api.openai.com/v1` | Provider endpoint, e.g. `https://api.groq.com/openai/v1` |
+| `LLM_MODEL` | `openai/gpt-oss-120b` (Groq) | Primary chat model. Groq's `llama-3.x-*-versatile` models are decommissioned — use `openai/gpt-oss-120b` |
+| `LLM_MODEL_FALLBACKS` | `openai/gpt-oss-20b,llama-3.1-8b-instant` | Comma-separated backup models tried automatically if the primary fails |
+| `GEMINI_API_KEY` | — | Final fallback used when every `LLM_MODEL`/`LLM_MODEL_FALLBACKS` entry fails |
 | `AI_FEATURES_ENABLED` | `true` | Kill switch for all AI endpoints |
 | `AI_RATE_LIMIT_PER_MINUTE` | `10` | Max AI requests per admin per minute |
+
+The chat/AI stack tries `LLM_MODEL` first, then each `LLM_MODEL_FALLBACKS` entry in order, then the Gemini model chain — so a single deprecated model can never take the assistant offline.
 
 ### SQL Migration
 Before using AI features, run this migration in the Supabase SQL Editor:

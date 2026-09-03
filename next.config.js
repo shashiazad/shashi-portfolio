@@ -5,7 +5,11 @@ const nextConfig = {
   // Keep pdfjs-dist out of the webpack bundle — it needs its worker file
   // at runtime which webpack can't resolve for serverless environments
   experimental: {
-    serverComponentsExternalPackages: ['pdfjs-dist'],
+    // Keep these out of the webpack bundle:
+    // - pdfjs-dist needs its worker file at runtime
+    // - edge-tts-universal / ws / bufferutil rely on native bindings that
+    //   break when bundled ("bufferUtil.mask is not a function")
+    serverComponentsExternalPackages: ['pdfjs-dist', 'edge-tts-universal', 'ws', 'bufferutil', 'utf-8-validate'],
   },
   webpack: (config) => {
     // pdfjs-dist optionally requires 'canvas' (native module not needed for text extraction)

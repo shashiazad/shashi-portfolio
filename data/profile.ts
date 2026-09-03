@@ -114,36 +114,16 @@ Experienced in secure service-to-service communication with mTLS, NGINX routing,
     'Solved 500+ DSA problems across LeetCode, GeeksforGeeks, and HackerRank.',
   ],
 
-  writing: [
-    {
-      title: 'Building Production REST APIs in Go',
-      venue: 'Medium',
-      summary: 'Practical patterns for building scalable, secure REST APIs in Go with production-ready architecture and service communication.',
-      link: 'https://shashisa.medium.com/',
-      year: '2026',
-    },
-    {
-      title: 'Lessons from Nutanix API Integration',
-      venue: 'Medium',
-      summary: 'Insights from integrating automation workflows with Nutanix Prism APIs, cluster provisioning, and infrastructure validation.',
-      link: 'https://shashisa.medium.com/',
-      year: '2026',
-    },
-    {
-      title: 'Designing Multi-Agent Systems with LangGraph',
-      venue: 'Medium',
-      summary: 'Architecting agentic AI workflows, multi-agent collaboration, and compliance-aware automation using LangGraph.',
-      link: 'https://shashisa.medium.com/',
-      year: '2026',
-    },
-    {
-      title: 'How I Built a RAG-based Financial Assistant',
-      venue: 'Medium',
-      summary: 'A step-by-step view of building a RAG-enabled finance assistant with retrieval, embeddings, and conversational UX.',
-      link: 'https://shashisa.medium.com/',
-      year: '2026',
-    },
-  ],
+  // Technical writing is now sourced from real, published articles in the
+  // Supabase `articles` table (see components/Publications.tsx). Placeholder
+  // Medium entries were removed to avoid linking to articles that don't exist.
+  writing: [] as Array<{
+    title: string;
+    venue: string;
+    summary: string;
+    link: string;
+    year: string;
+  }>,
 
   publications: [
     {
