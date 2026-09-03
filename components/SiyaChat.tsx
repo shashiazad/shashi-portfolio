@@ -43,6 +43,143 @@ const CHAT_FALLBACK_MESSAGES = [
 const GREETING =
   "Hi! I'm Siya, Shashi's personal AI assistant. Ask me anything about his skills, background, projects, or job referrals.";
 
+// ---------------------------------------------------------------------------
+// Lightweight, safe markdown rendering for chat bubbles.
+// Builds React nodes directly (no dangerouslySetInnerHTML) and supports the
+// small subset the assistant actually emits: bold, italic, inline code,
+// links, and bullet / numbered lists.
+// ---------------------------------------------------------------------------
+const INLINE_TOKEN_RE =
+  /(\*\*[^*\n]+\*\*|__[^_\n]+__|`[^`\n]+`|\[[^\]]+\]\([^)\s]+\)|\*[^*\s][^*\n]*\*)/g;
+
+function renderInline(text: string, keyPrefix: string): Array<string | JSX.Element> {
+  const nodes: Array<string | JSX.Element> = [];
+  let last = 0;
+  let i = 0;
+  let match: RegExpExecArray | null;
+  INLINE_TOKEN_RE.lastIndex = 0;
+
+  while ((match = INLINE_TOKEN_RE.exec(text)) !== null) {
+    if (match.index > last) nodes.push(text.slice(last, match.index));
+    const token = match[0];
+    const key = `${keyPrefix}-${i++}`;
+
+    if (token.startsWith('**') || token.startsWith('__')) {
+      nodes.push(
+        <strong key={key} className="font-semibold text-[#f5f5f7]">
+          {token.slice(2, -2)}
+        </strong>
+      );
+    } else if (token.startsWith('`')) {
+      nodes.push(
+        <code key={key} className="rounded bg-white/[0.14] px-1 py-0.5 font-mono text-[12.5px]">
+          {token.slice(1, -1)}
+        </code>
+      );
+    } else if (token.startsWith('[')) {
+      const link = /\[([^\]]+)\]\(([^)\s]+)\)/.exec(token);
+      if (link) {
+        const href = link[2];
+        const external = /^https?:\/\//.test(href);
+        nodes.push(
+          <a
+            key={key}
+            href={href}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noreferrer' : undefined}
+            className="font-medium underline decoration-[#2997ff] underline-offset-2 hover:text-[#2997ff]"
+          >
+            {link[1]}
+          </a>
+        );
+      } else {
+        nodes.push(token);
+      }
+    } else {
+      nodes.push(
+        <em key={key} className="italic">
+          {token.slice(1, -1)}
+        </em>
+      );
+    }
+    last = match.index + token.length;
+  }
+
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
+
+function renderRichText(content: string): JSX.Element {
+  const lines = content.replace(/\r\n/g, '\n').split('\n');
+  const blocks: JSX.Element[] = [];
+  let listItems: string[] | null = null;
+  let listOrdered = false;
+  let key = 0;
+
+  const flushList = () => {
+    if (!listItems || listItems.length === 0) {
+      listItems = null;
+      return;
+    }
+    const items = listItems;
+    const k = `list-${key++}`;
+    blocks.push(
+      listOrdered ? (
+        <ol key={k} className="my-1 list-decimal space-y-1 pl-4 marker:text-[#86868b]">
+          {items.map((it, idx) => (
+            <li key={idx}>{renderInline(it, `${k}-${idx}`)}</li>
+          ))}
+        </ol>
+      ) : (
+        <ul key={k} className="my-1 list-disc space-y-1 pl-4 marker:text-[#86868b]">
+          {items.map((it, idx) => (
+            <li key={idx}>{renderInline(it, `${k}-${idx}`)}</li>
+          ))}
+        </ul>
+      )
+    );
+    listItems = null;
+  };
+
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    const bullet = /^\s*[-*•]\s+(.*)$/.exec(line);
+    const ordered = /^\s*\d+[.)]\s+(.*)$/.exec(line);
+    const heading = /^\s*#{1,6}\s+(.*)$/.exec(line);
+
+    if (bullet) {
+      if (listItems && listOrdered) flushList();
+      listOrdered = false;
+      listItems = listItems ?? [];
+      listItems.push(bullet[1]);
+      continue;
+    }
+    if (ordered) {
+      if (listItems && !listOrdered) flushList();
+      listOrdered = true;
+      listItems = listItems ?? [];
+      listItems.push(ordered[1]);
+      continue;
+    }
+
+    flushList();
+    if (!line.trim()) continue;
+
+    if (heading) {
+      blocks.push(
+        <p key={`h-${key++}`} className="font-semibold text-[#f5f5f7]">
+          {renderInline(heading[1], `h-${key}`)}
+        </p>
+      );
+    } else {
+      blocks.push(<p key={`p-${key++}`}>{renderInline(line, `p-${key}`)}</p>);
+    }
+  }
+  flushList();
+
+  return <div className="space-y-1.5">{blocks.length ? blocks : content}</div>;
+}
+
 export default function SiyaChat() {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<ChatMode>('text');
@@ -276,29 +413,6 @@ export default function SiyaChat() {
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
-  const renderMessageContent = (content: string) => {
-    const linkRegex = /\[([^\]]+)\]\((\/[^)\s]+)\)/g;
-    const parts: Array<string | JSX.Element> = [];
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-
-    while ((match = linkRegex.exec(content)) !== null) {
-      const [fullMatch, label, href] = match;
-      if (match.index > lastIndex) parts.push(content.slice(lastIndex, match.index));
-      parts.push(
-        <a
-          key={`link-${match.index}-${href}`}
-          href={href}
-          className="underline decoration-[#2997ff] underline-offset-2 hover:text-[#2997ff] font-medium"
-        >
-          {label}
-        </a>
-      );
-      lastIndex = match.index + fullMatch.length;
-    }
-    if (lastIndex < content.length) parts.push(content.slice(lastIndex));
-    return parts.length ? parts : content;
-  };
 
   const getFallbackMessage = () => {
     if (CHAT_FALLBACK_MESSAGES.length === 1) return CHAT_FALLBACK_MESSAGES[0];
@@ -483,7 +597,7 @@ export default function SiyaChat() {
                           : 'bg-white/[0.08] border border-white/[0.08] text-[#f5f5f7] rounded-bl-sm'
                       }`}
                     >
-                      {renderMessageContent(msg.content)}
+                      {msg.role === 'assistant' ? renderRichText(msg.content) : msg.content}
                     </div>
                     {msg.role === 'assistant' && (
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-[52px] top-2 flex items-center gap-1">

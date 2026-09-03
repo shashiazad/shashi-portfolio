@@ -2,38 +2,10 @@ import Link from 'next/link';
 import Section from './Section';
 import SectionHeading from './SectionHeading';
 import { profile } from '@/data/profile';
-import { getSupabaseServer } from '@/lib/supabase/server';
+import { getPublishedArticles } from '@/lib/articles';
 import { ArrowUpRight, BookOpen, FileText, PenLine } from 'lucide-react';
 
 export const revalidate = 300;
-
-interface ArticleCard {
-  title: string;
-  slug: string;
-  summary: string | null;
-  published_at: string | null;
-}
-
-/**
- * Pull real, published articles from Supabase. Returns [] on any failure so the
- * section always renders (with an honest fallback) instead of crashing the page.
- */
-async function getPublishedArticles(): Promise<ArticleCard[]> {
-  try {
-    const supabase = getSupabaseServer();
-    const { data, error } = await supabase
-      .from('articles')
-      .select('title, slug, summary, published_at')
-      .eq('is_published', true)
-      .order('published_at', { ascending: false })
-      .limit(4);
-
-    if (error || !data) return [];
-    return data as unknown as ArticleCard[];
-  } catch {
-    return [];
-  }
-}
 
 function formatDate(value: string | null) {
   if (!value) return null;
@@ -45,7 +17,7 @@ function formatDate(value: string | null) {
 }
 
 export default async function Publications() {
-  const articles = await getPublishedArticles();
+  const { articles } = await getPublishedArticles(4);
   const publications = profile.publications ?? [];
 
   return (
