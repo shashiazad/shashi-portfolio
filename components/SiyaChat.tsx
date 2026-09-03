@@ -29,7 +29,7 @@ type ChatMode = 'text' | 'voice';
 const SUGGESTION_CHIPS = [
   'Tell me about Shashi.',
   "What are Shashi's key skills?",
-  "What is Shashi's current role?",
+  'Is Shashi available to join?',
   'How do I request a referral?',
 ];
 

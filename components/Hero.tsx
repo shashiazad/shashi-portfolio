@@ -34,7 +34,7 @@ export default function Hero() {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
               <span className="text-[13px] font-medium text-[#f5f5f7] tracking-wide">
-                Open to Backend Software Engineering, Distributed Systems, Cloud Infrastructure, and AI Platform roles.
+                Open to Backend, Distributed Systems, Cloud Infrastructure &amp; AI Platform roles — available to join immediately.
               </span>
             </div>
           </motion.div>

@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { containsHiringDecisionLanguage, audit } from '@/lib/constitution';
+import { containsHiringDecisionLanguage, looksOffTopicForSiya, audit } from '@/lib/constitution';
 import { callLLM, LLMMessage } from '@/lib/ai/llm';
 import { getPortfolioSystemPrompt } from '@/lib/ai/portfolioContext';
+
+const OFF_TOPIC_REDIRECT =
+  "I'm Siya, Shashi's assistant — I can only help with questions about Shashi Shekhar Azad: his experience, skills, projects, or how to work with him. What would you like to know about Shashi?";
 
 const CHAT_UNAVAILABLE_MESSAGES = [
   'I can\'t respond right now. Please try again shortly.',
@@ -45,11 +48,18 @@ export async function POST(req: NextRequest) {
 
     try {
       const result = await callLLM(formattedMessages, {
-        temperature: 0.7,
-        maxTokens: 1000,
+        temperature: 0.3,
+        maxTokens: 500,
       });
 
       let message = result.text || 'Sorry, I couldn\'t generate a response.';
+
+      // Scope guard: Siya only discusses Shashi. If a reply slips into acting as
+      // a general assistant (e.g. emits code), replace it with a redirect.
+      if (looksOffTopicForSiya(message)) {
+        audit('ai.constitution_violation', { reason: 'off_topic_response', model: result.model });
+        message = OFF_TOPIC_REDIRECT;
+      }
 
       // Constitution guard: strip responses that imply hiring decisions
       if (containsHiringDecisionLanguage(message)) {

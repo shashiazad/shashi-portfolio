@@ -110,6 +110,25 @@ export function containsHiringDecisionLanguage(text: string): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Scope guard – Siya must only discuss Shashi, never act as a general assistant
+// ---------------------------------------------------------------------------
+
+const OFF_TOPIC_PATTERNS = [
+  /```/, // a fenced code block — Siya is told never to emit these
+  /^\s{2,}(?:def |class |function |return |const |let |var |public |private |import |#include)/m, // indented code line
+  /\b(?:here(?:'s| is) (?:a|the|some) (?:python|java|javascript|c\+\+|go|typescript|sql|bash|shell)\s+(?:code|function|script|snippet|program))\b/i,
+];
+
+/**
+ * Returns true if Siya's reply looks like it fulfilled an out-of-scope request
+ * such as generating source code. Siya answers about Shashi only and never
+ * needs to emit code, so these are strong off-topic signals.
+ */
+export function looksOffTopicForSiya(text: string): boolean {
+  return OFF_TOPIC_PATTERNS.some((p) => p.test(text));
+}
+
+// ---------------------------------------------------------------------------
 // Null coercion – enforce "null for unknown" instead of empty strings
 // ---------------------------------------------------------------------------
 
