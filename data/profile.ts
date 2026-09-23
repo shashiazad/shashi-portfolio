@@ -88,7 +88,7 @@ Experienced in secure service-to-service communication with mTLS, NGINX routing,
     },
     {
       name: 'MonitorMixer - External Monitor Volume Controller',
-      summary: 'Lightweight native macOS menu bar app that intercepts keyboard volume keys to control external monitor speakers via DDC/CI protocol. Zero dependencies, MIT-licensed, with adaptive mute emulation, EDID-based display persistence, and fallback overlays for reliable feedback across monitor types.',
+      summary: 'Built a lightweight native macOS tool for MacBook users to control external monitor volume. Implemented the DDC/CI protocol with zero dependencies, featuring adaptive mute emulation, EDID-based display persistence, and fallback overlays for reliable feedback across monitor types. MIT-licensed.',
       stack: ['Swift', 'macOS', 'AppKit', 'SwiftUI', 'DDC/CI', 'IOAV APIs', 'EDID', 'I²C'],
       link: 'https://github.com/shashiazad/MonitorMixer',
       year: '2026',
