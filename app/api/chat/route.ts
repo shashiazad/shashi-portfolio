@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
       // Constitution guard: strip responses that imply hiring decisions
       if (containsHiringDecisionLanguage(message)) {
-        message = 'I can help you with information about Shashi and the referral process, but I\'m not able to speak to hiring decisions or outcomes. For specific questions about your application, please email Shashi at shashisa.cse@gmail.com.';
+        message = 'I can help you with information about Shashi, but I\'m not able to speak to hiring decisions or outcomes. For specific questions about your application, please email Shashi at shashisa.cse@gmail.com.';
       }
 
       audit('chat.response', { model: result.model, provider: result.provider });

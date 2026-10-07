@@ -1,11 +1,11 @@
 export const profile = {
   name: 'Shashi Shekhar Azad',
-  title: 'Software Engineer II',
-  company: 'Dell Technologies',
-  company_logo: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Dell_Technologies_logo.svg',
+  title: 'Software Engineer',
+  company: 'Optum',
+  company_logo: 'https://www.optum.com/content/dam/optum/about/optum-logo-1.png',
   photo: '/profile.jpg',
 
-  summary: `Backend Software Engineer with 2+ years of experience designing, building, and testing scalable REST APIs, microservices, and private-cloud infrastructure automation in Go, Java, and Python. Delivered production services for Dell APEX Cloud Platform on Nutanix with secure mTLS communication, containerized deployments, NGINX routing, and AI-assisted engineering workflows. Strong foundation in distributed systems, API architecture, infrastructure automation, and agentic AI-enabled development.`,
+  summary: `Backend Software Engineer with 2+ years of experience building scalable REST APIs, microservices, and AI-powered solutions using Python and FastAPI. Specialized in designing multi-agent AI systems with LangGraph, developing production backend services with secure communication patterns, and implementing distributed systems. Delivered production services for Dell APEX Cloud Platform and contributed to AI-assisted engineering workflows. Strong foundation in API architecture, agentic AI development, and modern backend engineering.`,
 
   education: [
     {
@@ -26,16 +26,16 @@ export const profile = {
     }
   ],
 
-  bio: `Software Engineer with 2+ years of experience building scalable backend services, REST APIs, microservices, and cloud automation frameworks using Go, Java, Python, and Spring Boot. Delivered cluster provisioning, validation, and lifecycle automation for private-cloud infrastructure at Dell, and contributed to AI agent-driven Spec-Driven Development workflows that generate requirements, implementation stories, test plans, and production-ready code.
+  bio: `Software Engineer with 2+ years of experience building scalable backend services, REST APIs, microservices, and AI-powered solutions using Python, FastAPI, Go, and Java. Specialized in multi-agent AI systems with LangGraph, designing distributed systems, and implementing production-ready backend infrastructure. At Dell, delivered cluster provisioning, validation, and lifecycle automation for private-cloud infrastructure, and contributed to AI agent-driven Spec-Driven Development workflows.
 
-Experienced in secure service-to-service communication with mTLS, NGINX routing, containerization with Docker and Kubernetes, GitHub Actions CI/CD, and distributed systems troubleshooting. Passionate about building intelligent software systems, AI-powered workflows, and high-quality engineering solutions.`,
+Experienced in secure service-to-service communication with mTLS, NGINX routing, containerization with Docker and Kubernetes, GitHub Actions CI/CD, and distributed systems troubleshooting. Passionate about building intelligent software systems, agentic AI solutions, and high-quality engineering.`,
 
   skills: {
-    languages: ['Go', 'Java', 'Python', 'C/C++', 'TypeScript'],
+    languages: ['Python', 'Go', 'Java', 'C/C++', 'TypeScript'],
     aiTools: ['LangGraph', 'LangChain', 'Google Gemini API', 'Groq API', 'FAISS', 'Prompt Engineering', 'RAG', 'Agentic AI', 'Embedding Models', 'ChromaDB'],
     testing: ['Unit Testing', 'Integration Testing', 'TDD', 'GoMock', 'Debugging', 'Code Reviews', 'CI/CD Validation'],
     tools: ['Git', 'GitHub Actions', 'Docker', 'Kubernetes', 'NGINX', 'Shell Scripting', 'Linux'],
-    backend: ['RESTful APIs', 'Microservices', 'Distributed Systems', 'Spring Boot', 'Prism API Integration', 'API Design', 'Service Automation'],
+    backend: ['FastAPI', 'RESTful APIs', 'Microservices', 'Distributed Systems', 'Spring Boot', 'Prism API Integration', 'API Design', 'Service Automation'],
     databases: ['PostgreSQL', 'Microsoft SQL Server', 'Prisma', 'pgvector'],
     cloud: ['Containerization', 'Kubernetes', 'NGINX', 'mTLS', 'CI/CD', 'Secure Service Communication'],
     engineering: ['Agile/Scrum', 'System Design', 'Object-Oriented Design', 'Requirements Analysis', 'SDLC', 'Cross-Functional Collaboration', 'Spec-Driven Development'],
@@ -43,9 +43,20 @@ Experienced in secure service-to-service communication with mTLS, NGINX routing,
 
   experience: [
     {
+      role: 'Software Engineer',
+      company: 'Optum',
+      period: 'Sep 2026 – Present',
+      location: 'Bangalore, India (Remote)',
+      bullets: [
+        'Developing scalable backend services and REST APIs using Python and FastAPI for healthcare and AI solutions.',
+        'Building multi-agent AI systems using LangGraph for intelligent automation and decision-making workflows.',
+        'Designing and implementing distributed backend architectures with emphasis on performance, reliability, and maintainability.'
+      ]
+    },
+    {
       role: 'Software Engineer II',
       company: 'Dell Technologies',
-      period: 'Jul 2025 – Present',
+      period: 'Jul 2025 – Aug 2026',
       location: 'Bangalore, India',
       bullets: [
         'Developed and delivered 6+ production-grade REST APIs and backend services in Go for cluster provisioning, validation, and network configuration within Dell APEX Cloud Platform for Nutanix, with unit tests using Go testing and GoMock integrated into GitHub Actions CI/CD workflows.',
@@ -147,6 +158,14 @@ Experienced in secure service-to-service communication with mTLS, NGINX routing,
       link: 'https://doi.org/10.1201/9781003731689-74'
     }
   ],
+
+  // Hiring availability. Set `noticePeriod` (e.g. '60 days') once confirmed; while it is
+  // null the chat agent will not state any notice period or joining date.
+  availability: {
+    openToOpportunities: true,
+    noticePeriod: null as string | null,
+    relocation: 'Open to Bangalore, Hyderabad, and Pune',
+  },
 
   contact: {
     email: 'shashisa.cse@gmail.com',
