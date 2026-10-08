@@ -43,7 +43,7 @@ const GEMINI_MODEL_CHAIN = [
  * model can be overridden with `LLM_MODEL` and the backups with
  * `LLM_MODEL_FALLBACKS` (comma-separated).
  */
-const GROQ_MODEL_CHAIN = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'llama-3.1-8b-instant'];
+const GROQ_MODEL_CHAIN = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
 const OPENAI_MODEL_CHAIN = ['gpt-4o-mini'];
 
 /**

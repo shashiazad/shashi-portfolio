@@ -17,7 +17,26 @@ import {
   MicOff,
   Keyboard,
   AudioLines,
+  Maximize2,
+  Minimize2,
+  Download,
 } from 'lucide-react';
+import {
+  DEFAULT_GREETING,
+  FORGOT_REPLY,
+  SEEN_STORAGE_KEY,
+  SIZE_STORAGE_KEY,
+  VISITOR_STORAGE_KEY,
+  buildGreeting,
+  buildIdentityReply,
+  extractVisitorInfo,
+  firstName,
+  isForgetRequest,
+  isIdentityQuestion,
+  mergeVisitor,
+  sanitizeVisitor,
+  type Visitor,
+} from '@/lib/visitor';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -40,8 +59,36 @@ const CHAT_FALLBACK_MESSAGES = [
   "I'm having trouble responding at the moment. Please try again soon.",
 ];
 
-const GREETING =
-  "Hi! I'm Siya, Shashi's personal AI assistant. Ask me anything about his skills, background, projects, or job referrals.";
+const GREETING = DEFAULT_GREETING;
+
+// Chat window geometry (the window is anchored bottom-right and grows up/left).
+const DEFAULT_WIDTH = 400;
+const DEFAULT_HEIGHT = 560;
+const MIN_WIDTH = 340;
+const MIN_HEIGHT = 420;
+const MAX_WIDTH = 960;
+const BOTTOM_OFFSET = 96; // matches `bottom-24`
+const TOP_MARGIN = 16;
+const KEY_STEP = 24;
+
+interface WindowSize {
+  w: number;
+  h: number;
+}
+
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+
+function getLimits(viewportW: number, viewportH: number) {
+  const rightGap = viewportW >= 640 ? 24 : 16;
+  const maxW = Math.min(viewportW - rightGap - 16, MAX_WIDTH);
+  const maxH = viewportH - BOTTOM_OFFSET - TOP_MARGIN;
+  return {
+    minW: Math.min(MIN_WIDTH, maxW),
+    maxW,
+    minH: Math.min(MIN_HEIGHT, maxH),
+    maxH,
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Lightweight, safe markdown rendering for chat bubbles.
@@ -81,17 +128,32 @@ function renderInline(text: string, keyPrefix: string): Array<string | JSX.Eleme
       if (link) {
         const href = link[2];
         const external = /^https?:\/\//.test(href);
-        nodes.push(
-          <a
-            key={key}
-            href={href}
-            target={external ? '_blank' : undefined}
-            rel={external ? 'noreferrer' : undefined}
-            className="font-medium underline decoration-[#2997ff] underline-offset-2 hover:text-[#2997ff]"
-          >
-            {link[1]}
-          </a>
-        );
+        if (!external && /\.pdf(?:$|\?)/i.test(href)) {
+          // Same-origin PDF (the resume): render as a clear download button.
+          nodes.push(
+            <a
+              key={key}
+              href={href}
+              download
+              className="my-1 inline-flex items-center gap-1.5 rounded-full bg-[#0071e3] px-3.5 py-1.5 text-[12.5px] font-semibold text-white no-underline shadow-sm transition-colors hover:bg-[#0077ED]"
+            >
+              <Download size={13} />
+              {link[1]}
+            </a>
+          );
+        } else {
+          nodes.push(
+            <a
+              key={key}
+              href={href}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noreferrer' : undefined}
+              className="font-medium underline decoration-[#2997ff] underline-offset-2 hover:text-[#2997ff]"
+            >
+              {link[1]}
+            </a>
+          );
+        }
       } else {
         nodes.push(token);
       }
@@ -191,9 +253,25 @@ export default function SiyaChat() {
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [micError, setMicError] = useState<string | null>(null);
+  const [visitor, setVisitor] = useState<Visitor | null>(null);
+  const [size, setSize] = useState<WindowSize | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [resizing, setResizing] = useState(false);
+  const [viewport, setViewport] = useState({ w: 1280, h: 800 });
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const visitorRef = useRef<Visitor | null>(null);
+  const awaitingIdentityRef = useRef(false);
+  const firstVisitRef = useRef(false);
+  const greetedRef = useRef(false);
+  const hasQueriedRef = useRef(false);
+  const finePointerRef = useRef(true);
+  const userLeftChatRef = useRef(false);
+  const loadingRef = useRef(false);
+  const sizeRef = useRef<WindowSize | null>(null);
+  const resizeSessionRef = useRef<{ mode: 'corner' | 'left' | 'top'; x: number; y: number; w: number; h: number } | null>(null);
   const lastFallbackIndexRef = useRef(-1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -205,6 +283,87 @@ export default function SiyaChat() {
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+
+  // ----- Visitor memory + saved window size (browser only) -------------------
+  const updateVisitor = useCallback((next: Visitor | null) => {
+    visitorRef.current = next;
+    setVisitor(next);
+    try {
+      if (next) window.localStorage.setItem(VISITOR_STORAGE_KEY, JSON.stringify(next));
+      else window.localStorage.removeItem(VISITOR_STORAGE_KEY);
+    } catch {
+      /* storage unavailable (private mode): memory just lasts for this tab */
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(VISITOR_STORAGE_KEY);
+      const stored = raw ? sanitizeVisitor(JSON.parse(raw)) : null;
+      visitorRef.current = stored;
+      setVisitor(stored);
+      firstVisitRef.current = !window.localStorage.getItem(SEEN_STORAGE_KEY);
+
+      const savedSize = JSON.parse(window.localStorage.getItem(SIZE_STORAGE_KEY) ?? 'null');
+      if (savedSize && Number.isFinite(savedSize.w) && Number.isFinite(savedSize.h)) {
+        sizeRef.current = { w: savedSize.w, h: savedSize.h };
+        setSize(sizeRef.current);
+      }
+    } catch {
+      /* ignore corrupt or unavailable storage */
+    }
+
+    finePointerRef.current = window.matchMedia?.('(pointer: fine)').matches ?? true;
+    const onResize = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // First open of the session: greet the visitor (by name if we know them).
+  useEffect(() => {
+    if (!open || greetedRef.current) return;
+    greetedRef.current = true;
+    const { text, asksIdentity } = buildGreeting(visitorRef.current, firstVisitRef.current);
+    awaitingIdentityRef.current = asksIdentity;
+    setMessages((prev) =>
+      prev.length === 1 && prev[0].role === 'assistant' ? [{ role: 'assistant', content: text }] : prev
+    );
+    try {
+      window.localStorage.setItem(SEEN_STORAGE_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+  }, [open]);
+
+  // ----- Keep the cursor in the message box while the visitor is chatting ------
+  const focusInput = useCallback((force = false) => {
+    const el = inputRef.current;
+    if (!el) return;
+    if (!force && userLeftChatRef.current) return; // they clicked elsewhere on the page
+    if (document.activeElement === el) return;
+    const selection = window.getSelection();
+    if (
+      !force &&
+      selection &&
+      !selection.isCollapsed &&
+      containerRef.current?.contains(selection.anchorNode)
+    ) {
+      return; // don't clobber text they're selecting to copy
+    }
+    el.focus({ preventScroll: true });
+  }, []);
+
+  // Track whether the visitor has moved on to the rest of the page.
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Element | null;
+      userLeftChatRef.current = !target?.closest?.('[data-siya-root]');
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => document.removeEventListener('pointerdown', onPointerDown, true);
+  }, [open]);
 
   // ----- Text-to-speech -------------------------------------------------------
   // Primary: Edge neural voice (en-IN Neerja) via /api/tts.
@@ -433,14 +592,43 @@ export default function SiyaChat() {
   const sendMessage = useCallback(
     async (textToSend: string) => {
       const text = textToSend.trim();
-      if (!text || loading) return;
+      if (!text || loadingRef.current) return;
 
+      hasQueriedRef.current = true;
       const speak = modeRef.current === 'voice';
       const userMsg: Message = { role: 'user', content: text };
-      const newMessages = [...messagesRef.current, userMsg];
-      setMessages(newMessages);
+      const history = [...messagesRef.current, userMsg];
+
+      // Remember anything the visitor tells us about themselves.
+      const awaiting = awaitingIdentityRef.current;
+      awaitingIdentityRef.current = false;
+      const found = extractVisitorInfo(text, { awaitingIdentity: awaiting });
+      if (found.name || found.role || found.company) {
+        updateVisitor(mergeVisitor(visitorRef.current, found));
+      }
+
+      // Memory questions are answered here, instantly and without the model.
+      const replyLocally = (content: string, asksIdentity = false) => {
+        awaitingIdentityRef.current = asksIdentity;
+        setMessages([...history, { role: 'assistant', content }]);
+        setInput('');
+        if (speak) void speakText(content);
+      };
+      if (isForgetRequest(text)) {
+        updateVisitor(null);
+        replyLocally(FORGOT_REPLY);
+        return;
+      }
+      if (isIdentityQuestion(text)) {
+        const reply = buildIdentityReply(visitorRef.current);
+        replyLocally(reply.text, reply.asksIdentity);
+        return;
+      }
+
+      setMessages(history);
       setInput('');
       setLoading(true);
+      loadingRef.current = true;
 
       const pushAssistant = (content: string) => {
         setMessages((prev) => [...prev, { role: 'assistant', content }]);
@@ -451,7 +639,7 @@ export default function SiyaChat() {
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: newMessages }),
+          body: JSON.stringify({ messages: history, visitor: visitorRef.current }),
         });
         const data = await res.json().catch(() => null);
 
@@ -463,11 +651,26 @@ export default function SiyaChat() {
       } catch {
         pushAssistant(getFallbackMessage());
       } finally {
+        loadingRef.current = false;
         setLoading(false);
       }
     },
-    [loading, speakText]
+    [speakText, updateVisitor]
   );
+
+  // Keep the cursor ready for the next message: on open, after every reply,
+  // and when voice input ends. Never steals focus once they've left the chat.
+  useEffect(() => {
+    if (!open || loading || isListening) return;
+    if (!hasQueriedRef.current && !finePointerRef.current) return; // don't pop the keyboard on phones
+    focusInput();
+  }, [open, loading, isListening, messages, focusInput]);
+
+  const forgetVisitor = () => {
+    updateVisitor(null);
+    awaitingIdentityRef.current = false;
+    setMessages((prev) => [...prev, { role: 'assistant', content: FORGOT_REPLY }]);
+  };
 
   useEffect(() => {
     sendMessageRef.current = (text: string) => {
@@ -481,9 +684,107 @@ export default function SiyaChat() {
     else void sendMessage(input);
   };
 
+  // ----- Resizable window ----------------------------------------------------
+  const isNarrow = viewport.w < 640;
+  const limits = getLimits(viewport.w, viewport.h);
+  const preferred: WindowSize =
+    !isNarrow && size
+      ? size
+      : expanded
+      ? { w: Math.min(limits.maxW, 760), h: limits.maxH }
+      : { w: isNarrow ? viewport.w - 32 : DEFAULT_WIDTH, h: Math.min(DEFAULT_HEIGHT, limits.maxH) };
+  const dims: WindowSize = {
+    w: clamp(preferred.w, limits.minW, limits.maxW),
+    h: clamp(preferred.h, limits.minH, limits.maxH),
+  };
+
+  const applySize = (w: number, h: number, persist: boolean) => {
+    const l = getLimits(window.innerWidth, window.innerHeight);
+    const next = { w: Math.round(clamp(w, l.minW, l.maxW)), h: Math.round(clamp(h, l.minH, l.maxH)) };
+    sizeRef.current = next;
+    setSize(next);
+    setExpanded(false);
+    if (persist) {
+      try {
+        window.localStorage.setItem(SIZE_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+    }
+  };
+
+  const resetSize = () => {
+    sizeRef.current = null;
+    setSize(null);
+    setExpanded(false);
+    try {
+      window.localStorage.removeItem(SIZE_STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const toggleExpanded = () => {
+    sizeRef.current = null;
+    setSize(null);
+    try {
+      window.localStorage.removeItem(SIZE_STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+    setExpanded((v) => !v);
+    focusInput(true);
+  };
+
+  const startResize = (mode: 'corner' | 'left' | 'top') => (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = containerRef.current;
+    if (!el) return;
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    resizeSessionRef.current = { mode, x: e.clientX, y: e.clientY, w: el.offsetWidth, h: el.offsetHeight };
+    setResizing(true);
+  };
+
+  const onResizeMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const session = resizeSessionRef.current;
+    if (!session) return;
+    // The window is anchored bottom-right, so dragging left/up makes it bigger.
+    const w = session.mode === 'top' ? session.w : session.w - (e.clientX - session.x);
+    const h = session.mode === 'left' ? session.h : session.h - (e.clientY - session.y);
+    applySize(w, h, false);
+  };
+
+  const endResize = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!resizeSessionRef.current) return;
+    resizeSessionRef.current = null;
+    setResizing(false);
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    if (sizeRef.current) applySize(sizeRef.current.w, sizeRef.current.h, true);
+    focusInput(true);
+  };
+
+  const onHandleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const step = e.shiftKey ? KEY_STEP * 3 : KEY_STEP;
+    let { offsetWidth: w, offsetHeight: h } = el;
+    if (e.key === 'ArrowLeft') w += step;
+    else if (e.key === 'ArrowRight') w -= step;
+    else if (e.key === 'ArrowUp') h += step;
+    else if (e.key === 'ArrowDown') h -= step;
+    else if (e.key === 'Enter' || e.key === ' ') {
+      resetSize();
+      e.preventDefault();
+      return;
+    } else return;
+    e.preventDefault();
+    applySize(w, h, true);
+  };
+
   const switchMode = (next: ChatMode) => {
     setMode(next);
     setMicError(null);
+    queueMicrotask(() => focusInput(true));
     if (next === 'text') {
       stopSpeech();
       if (isListening) stopListening(false);
@@ -497,9 +798,12 @@ export default function SiyaChat() {
   return (
     <>
       {/* Floating toggle */}
-      <div className="fixed bottom-6 right-6 z-[9999]">
+      <div className="fixed bottom-6 right-6 z-[9999]" data-siya-root>
         <motion.button
-          onClick={() => setOpen(!open)}
+          onClick={() => {
+            userLeftChatRef.current = false;
+            setOpen(!open);
+          }}
           className="siri-orb shadow-2xl relative"
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
@@ -516,13 +820,59 @@ export default function SiyaChat() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={containerRef}
+            data-siya-root
             initial={{ opacity: 0, y: 16, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-            className="fixed bottom-24 right-4 sm:right-6 z-[9999] w-[calc(100vw-2rem)] sm:w-[400px] rounded-3xl overflow-hidden shadow-2xl flex flex-col border border-white/[0.12] bg-[#1d1d1f]/95 backdrop-blur-2xl"
-            style={{ height: '560px', maxHeight: 'calc(100vh - 7rem)' }}
+            className={`fixed bottom-24 right-4 sm:right-6 z-[9999] rounded-3xl overflow-hidden shadow-2xl flex flex-col border border-white/[0.12] bg-[#1d1d1f]/95 backdrop-blur-2xl ${
+              resizing ? 'select-none' : ''
+            }`}
+            style={{ width: dims.w, height: dims.h }}
           >
+            {/* Resize handles (desktop): drag the left edge, top edge, or corner */}
+            {!isNarrow && (
+              <>
+                <div
+                  aria-hidden
+                  onPointerDown={startResize('left')}
+                  onPointerMove={onResizeMove}
+                  onPointerUp={endResize}
+                  onPointerCancel={endResize}
+                  onDoubleClick={resetSize}
+                  className="absolute bottom-0 left-0 top-7 z-20 w-1.5 cursor-ew-resize touch-none transition-colors hover:bg-[#2997ff]/40"
+                />
+                <div
+                  aria-hidden
+                  onPointerDown={startResize('top')}
+                  onPointerMove={onResizeMove}
+                  onPointerUp={endResize}
+                  onPointerCancel={endResize}
+                  onDoubleClick={resetSize}
+                  className="absolute left-7 right-0 top-0 z-20 h-1.5 cursor-ns-resize touch-none transition-colors hover:bg-[#2997ff]/40"
+                />
+                <div
+                  role="separator"
+                  tabIndex={0}
+                  aria-label="Resize chat window. Drag, or use the arrow keys. Press Enter to reset."
+                  title="Drag to resize · double-click to reset"
+                  onPointerDown={startResize('corner')}
+                  onPointerMove={onResizeMove}
+                  onPointerUp={endResize}
+                  onPointerCancel={endResize}
+                  onDoubleClick={resetSize}
+                  onKeyDown={onHandleKeyDown}
+                  className="group/grip absolute left-0 top-0 z-30 h-7 w-7 cursor-nwse-resize touch-none rounded-br-lg text-[#6e6e73] transition-colors hover:text-[#2997ff] focus-visible:text-[#2997ff]"
+                >
+                  <svg viewBox="0 0 28 28" className="h-full w-full" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                    <path d="M9 17 17 9" />
+                    <path d="M9 22 22 9" />
+                  </svg>
+                </div>
+              </>
+            )}
+
             {/* Header */}
             <div className="shrink-0 border-b border-white/[0.08] bg-white/[0.02] px-5 pt-4 pb-3">
               <div className="flex items-center gap-3">
@@ -537,17 +887,40 @@ export default function SiyaChat() {
                     </span>
                   </div>
                   <p className="text-[11px] text-[#86868b] truncate">
-                    {isListening
-                      ? 'Listening…'
-                      : isSpeaking
-                      ? 'Speaking…'
-                      : mode === 'voice'
-                      ? 'Voice mode · speaks replies aloud'
-                      : "Shashi's AI Assistant"}
+                    {isListening ? (
+                      'Listening…'
+                    ) : isSpeaking ? (
+                      'Speaking…'
+                    ) : visitor?.name ? (
+                      <>
+                        Chatting with {firstName(visitor)} ·{' '}
+                        <button
+                          type="button"
+                          onClick={forgetVisitor}
+                          className="underline decoration-dotted underline-offset-2 hover:text-[#f5f5f7]"
+                          title="Clear what Siya remembers about you on this device"
+                        >
+                          Not you?
+                        </button>
+                      </>
+                    ) : mode === 'voice' ? (
+                      'Voice mode · speaks replies aloud'
+                    ) : (
+                      "Shashi's AI Assistant"
+                    )}
                   </p>
                 </div>
 
-                <div className="ml-auto flex items-center gap-1.5">
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={toggleExpanded}
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-[#a1a1a6] transition-colors hover:bg-white/[0.14] hover:text-[#f5f5f7]"
+                    title={expanded ? 'Restore window size' : 'Expand window'}
+                    aria-label={expanded ? 'Restore chat window size' : 'Expand chat window'}
+                  >
+                    {expanded ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+                  </button>
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -600,7 +973,7 @@ export default function SiyaChat() {
                       {msg.role === 'assistant' ? renderRichText(msg.content) : msg.content}
                     </div>
                     {msg.role === 'assistant' && (
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-[52px] top-2 flex items-center gap-1">
+                      <div className="mt-1 flex items-center gap-2 pl-1 opacity-60 transition-opacity group-hover:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100">
                         <button
                           onClick={() => (isSpeaking ? stopSpeech() : speakText(msg.content))}
                           className="text-[#86868b] hover:text-[#2997ff] transition-colors p-0.5"
@@ -738,8 +1111,10 @@ export default function SiyaChat() {
                       ? 'Tap the mic and speak, or type…'
                       : "Ask Siya about Shashi's experience…"
                   }
-                  className="flex-1 px-4 py-2.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-[14px] text-[#f5f5f7] placeholder:text-[#86868b] focus:outline-none focus:ring-2 focus:ring-[#2997ff]/30 focus:border-[#2997ff]/50 transition-all"
-                  disabled={loading}
+                  className="min-w-0 flex-1 px-4 py-2.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-[14px] text-[#f5f5f7] caret-[#2997ff] placeholder:text-[#86868b] focus:outline-none focus:ring-2 focus:ring-[#2997ff]/60 focus:border-[#2997ff] focus:bg-white/[0.09] transition-all"
+                  autoComplete="off"
+                  enterKeyHint="send"
+                  aria-label="Message Siya"
                 />
                 <button
                   type="submit"

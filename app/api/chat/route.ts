@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { containsHiringDecisionLanguage, looksOffTopicForSiya, audit } from '@/lib/constitution';
 import { callLLM, LLMMessage } from '@/lib/ai/llm';
 import { getPortfolioSystemPrompt } from '@/lib/ai/portfolioContext';
+import {
+  buildAddressReply,
+  buildPrivacyRedirect,
+  buildResumeReply,
+  containsSensitiveData,
+  detectIntents,
+  ensureResumeLink,
+} from '@/lib/ai/privacy';
+import { sanitizeVisitor } from '@/lib/visitor';
 
 const OFF_TOPIC_REDIRECT =
   "I'm Siya, Shashi's assistant — I can only help with questions about Shashi Shekhar Azad: his experience, skills, projects, or how to work with him. What would you like to know about Shashi?";
@@ -29,13 +38,21 @@ function getUnavailableMessage() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = await req.json();
+    const { messages, visitor: rawVisitor } = await req.json();
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: getUnavailableMessage() }, { status: 400 });
     }
 
+    // What the visitor told Siya about themselves (kept only in their browser).
+    // Re-sanitised here so nothing stored client-side can inject prompt text.
+    const visitor = sanitizeVisitor(rawVisitor);
+
+    // Intent of the latest visitor message, used for guaranteed answers below.
+    const lastUser = [...messages].reverse().find((m: { role?: string }) => m?.role === 'user');
+    const intents = detectIntents(typeof lastUser?.content === 'string' ? lastUser.content : '');
+
     // Build complete dynamic system prompt from profile.ts
-    const systemPrompt = getPortfolioSystemPrompt();
+    const systemPrompt = getPortfolioSystemPrompt({ visitor });
 
     // Format conversation history for universal LLM client
     const formattedMessages: LLMMessage[] = [
@@ -61,15 +78,32 @@ export async function POST(req: NextRequest) {
         message = OFF_TOPIC_REDIRECT;
       }
 
+      // Privacy guard: never let a phone number, street address, ID, DOB, or pay
+      // figure through. Address questions fall back to the city-level answer.
+      if (containsSensitiveData(message)) {
+        audit('ai.constitution_violation', { reason: 'sensitive_data_in_reply', model: result.model });
+        message = intents.address ? buildAddressReply() : buildPrivacyRedirect();
+      }
+
       // Constitution guard: strip responses that imply hiring decisions
       if (containsHiringDecisionLanguage(message)) {
         message = 'I can help you with information about Shashi, but I\'m not able to speak to hiring decisions or outcomes. For specific questions about your application, please email Shashi at shashisa.cse@gmail.com.';
       }
 
+      // Resume requests always end with the real download link.
+      if (intents.resume) message = ensureResumeLink(message);
+
       audit('chat.response', { model: result.model, provider: result.provider });
       return NextResponse.json({ message });
     } catch (err) {
       console.error('[chat] LLM call failed:', err);
+
+      // Resume and address questions don't need the model: answer them anyway.
+      if (intents.resume || intents.address) {
+        audit('chat.response', { model: 'deterministic', provider: 'fallback' });
+        const message = intents.resume ? buildResumeReply() : buildAddressReply();
+        return NextResponse.json({ message });
+      }
       return NextResponse.json({ error: getUnavailableMessage() }, { status: 503 });
     }
   } catch (error: unknown) {

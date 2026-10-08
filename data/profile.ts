@@ -173,6 +173,8 @@ Experienced in secure service-to-service communication with mTLS, NGINX routing,
     linkedin: 'https://www.linkedin.com/in/shashisa',
     medium: 'https://shashisa.medium.com/',
     codolio: 'https://codolio.com/profile/shashisa',
-    location: 'Bangalore, Karnataka, India'
+    // City-level only. The chat agent may share these two cities but never a street address.
+    location: 'Bangalore, Karnataka, India',
+    hometown: 'Varanasi, Uttar Pradesh, India'
   }
 };
